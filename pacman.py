@@ -56,15 +56,17 @@ class Labyrinth:
         pygame.draw.line(screen, "#FFFFFF", (length * TILE_SIZE, 0), (length * TILE_SIZE, height * TILE_SIZE))
    
     def is_colliding(self, x, y):
-        return self.map[y//TILE_SIZE][x//TILE_SIZE] in self.COLLISION
+        return self.map[y][x] in self.COLLISION
+
 
 
 class Character:
-    def __init__(self, pos_x, pos_y, image_path, labyrinth : Labyrinth):
+    def __init__(self, pos_x, pos_y, image_path, labyrinth : Labyrinth, direction):
         self.pos_x = pos_x
         self.pos_y = pos_y
+        self.direction = direction
         self.image = pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-        var = pygame.PixelArray(self.image.copy())
+        var = pygame.PixelArray(self.image)
         var.replace((0, 0, 0, 255), (0, 0, 0, 0))
         self.labyrinth = labyrinth
 
@@ -82,40 +84,69 @@ class Character:
         elif x_pixels + self.pos_x >= height * TILE_SIZE:
             self.pos_x = x_pixels - height * TILE_SIZE
         
-    def move(self, x, y):
 
+    def can_move(self, x, y):
+        new_pos_x = self.pos_x + x * self.speed
+        new_pos_y = self.pos_y + y * self.speed
+        if (x,y)!=(1,0):
+            print(self.pos_x,self.pos_y)
+            print(new_pos_x,new_pos_y)
+
+        
+        if self.direction == (-1, 0) and self.labyrinth.is_colliding(new_pos_x//TILE_SIZE, (new_pos_y+TILE_SIZE//2)//TILE_SIZE):
+            if (x,y)!=(1,0):
+                print(1)
+            return False
+        if self.direction == (0, -1) and self.labyrinth.is_colliding((new_pos_x+TILE_SIZE//2)//TILE_SIZE, new_pos_y//TILE_SIZE):
+            if (x,y)!=(1,0):
+                print(2)
+            return False
+        elif self.direction == (1, 0) and self.labyrinth.is_colliding((new_pos_x+TILE_SIZE)//TILE_SIZE, (new_pos_y+TILE_SIZE//2)//TILE_SIZE):
+            if (x,y)!=(1,0):
+                print(3)
+            return False
+        elif self.direction == (0, 1) and self.labyrinth.is_colliding((new_pos_x+TILE_SIZE//2)//TILE_SIZE, (new_pos_y+TILE_SIZE)//TILE_SIZE):
+            if (x,y)!=(1,0):
+                print(4)
+            return False
+        
+        return True
+
+
+
+    def move(self):
+        x, y = self.direction
         self.tp(x, y)
-        print(x, y)
-        if not self.labyrinth.is_colliding(self.pos_x + x,self.pos_y + y):
-            self.pos_x += x
-            self.pos_y += y
-        print(self.pos_x, self.pos_y)
+        if self.can_move(x, y):
+            self.pos_x += x * self.speed
+            self.pos_y += y * self.speed
+    
 
 
 class Pac_man(Character):
-    keys_directions = {pygame.K_UP: (0,-5), pygame.K_DOWN: (0,5), pygame.K_LEFT: (-5, 0), pygame.K_RIGHT: (5, 0)}
+    speed=5
+    keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1, 0), pygame.K_RIGHT: (1, 0)}
     
-    def __init__(self, x, y, labyrinth, image_path = "data/pacman.png", direction = (5, 0)) -> None:
-        Character.__init__(self, x, y, image_path, labyrinth)
-        self.direction = direction
+    def __init__(self, x, y, labyrinth, image_path = "data/pacman.png", direction = (1, 0)) -> None:
+        Character.__init__(self, x, y, image_path, labyrinth, direction)
     
     def set_direction(self, keys):
         keys = [key.key for key in keys if key.type == pygame.KEYDOWN]
         for key, value in self.keys_directions.items():
             if key in keys:
                 if value != self.direction:
-                    if not self.labyrinth.is_colliding(self.pos_x + value[0], self.pos_y + value[1]):
+                    if self.can_move(value[0],value[1]):
                         self.direction = value
 
     def update(self, keys):
         self.set_direction(keys)
-        self.move(self.direction[0], self.direction[1])
+        self.move()
         self.draw_character()
 
 class Ghost(Character):
     
-    def __init__(self, x, y, labyrinth, image_path = "data/ghost.png") -> None:
-        Character.__init__(self, x, y, image_path, labyrinth)
+    def __init__(self, x, y, labyrinth, image_path = "data/ghost.png", direction = (1,0)) -> None:
+        Character.__init__(self, x, y, image_path, labyrinth, direction)
 
 
     # ==== fonctions ==== #
