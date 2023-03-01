@@ -64,8 +64,9 @@ class Character:
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.image = pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-        var = pygame.PixelArray(self.image.copy())
+        var = pygame.PixelArray(self.image)
         var.replace((0, 0, 0, 255), (0, 0, 0, 0))
+        del var
         self.labyrinth = labyrinth
 
     def draw_character(self):
@@ -83,10 +84,9 @@ class Character:
             self.pos_x = x_pixels - height * TILE_SIZE
         
     def move(self, x, y):
-
         self.tp(x, y)
         print(x, y)
-        if not self.labyrinth.is_colliding(self.pos_x + x,self.pos_y + y):
+        if not self.labyrinth.is_colliding(self.pos_x + x, self.pos_y + y):
             self.pos_x += x
             self.pos_y += y
         print(self.pos_x, self.pos_y)
@@ -112,10 +112,38 @@ class Pac_man(Character):
         self.move(self.direction[0], self.direction[1])
         self.draw_character()
 
+
 class Ghost(Character):
-    
-    def __init__(self, x, y, labyrinth, image_path = "data/ghost.png") -> None:
+   
+    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png", color=(255, 0, 0)) -> None:
         Character.__init__(self, x, y, image_path, labyrinth)
+        var = pygame.PixelArray(self.image)
+        var.replace((237, 28, 36, 255), color)
+        del var
+
+
+class Blinky(Ghost):
+   
+    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png") -> None:
+        super().__init__(x, y, labyrinth, image_path, (255, 0, 0))
+
+
+class Pinky(Ghost):
+   
+    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png") -> None:
+        super().__init__(x, y, labyrinth, image_path, (255, 184, 255))
+
+
+class Inky(Ghost):
+   
+    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png") -> None:
+        super().__init__(x, y, labyrinth, image_path, (0, 255, 255))
+
+
+   
+class Clyde(Ghost):
+    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png") -> None:
+        super().__init__(x, y, labyrinth, image_path, (255, 184, 81))
 
 
     # ==== fonctions ==== #
