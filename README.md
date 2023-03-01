@@ -1,2 +1,2 @@
 # pac-man
-pac man pour projet NSI
+Pac man pour un projet de NSI.
