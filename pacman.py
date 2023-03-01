@@ -68,6 +68,7 @@ class Character:
         self.image = pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         var = pygame.PixelArray(self.image)
         var.replace((0, 0, 0, 255), (0, 0, 0, 0))
+        del var
         self.labyrinth = labyrinth
 
     def draw_character(self):
@@ -142,6 +143,7 @@ class Pac_man(Character):
         self.set_direction(keys)
         self.move()
         self.draw_character()
+
 
 class Ghost(Character):
     
