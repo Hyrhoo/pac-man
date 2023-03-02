@@ -145,7 +145,7 @@ class Character:
             return
         self.pos_x, self.pos_y = new_pos
         self.tp()
-        self.images_index += 1
+        self.images_index += 0.25
         if self.images_index == len(self.images):
             self.images_index = 0
 
@@ -166,7 +166,7 @@ class Pac_man(Character):
 
     keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=7, image_paths=["data/pacman_1.png", "data/pacman_2.png", "data/pacman_3.png"], direction=(1,0)) -> None:
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=7, image_paths=["data/pacman_1.png", "data/pacman_2.png", "data/pacman_3.png", "data/pacman_4.png"], direction=(1,0)) -> None:
         Character.__init__(self, x, y, speed, direction, image_paths, labyrinth)
         self.input_direction = None
 
@@ -215,14 +215,14 @@ class Pac_man(Character):
         draw the caracter on the screen
         """
         # allow to not turn the base image
-        image = self.images[self.images_index].copy()
+        image = self.images[int(self.images_index)].copy()
         # allow to turn the image
         if self.direction == (0, -1):
             image = pygame.transform.rotate(image, 90)
         elif self.direction == (0, 1):
             image = pygame.transform.rotate(image, -90)
         elif self.direction == (-1, 0):
-            image = pygame.transform.rotate(image, 180)
+            image = pygame.transform.flip(image, True, False)
 
         screen.blit(image, (self.pos_x, self.pos_y))
 
