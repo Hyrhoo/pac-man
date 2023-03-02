@@ -3,7 +3,7 @@ from time import monotonic
 
     # ==== variables ==== #
 
-GLOBAL_FPS = 60     # FPS global du jeu
+GLOBAL_FPS = 30     # FPS global du jeu
 TILE_SIZE = 28      # definition du dessin (carré)
 NUMBRE_IMG = 18     # nombre d'images à charger
 length = 28         # hauteur du niveau
@@ -56,94 +56,124 @@ class Labyrinth:
         pygame.draw.line(screen, "#FFFFFF", (length * TILE_SIZE, 0), (length * TILE_SIZE, height * TILE_SIZE))
    
     def is_colliding(self, x, y):
-        return self.map[y//TILE_SIZE][x//TILE_SIZE] in self.COLLISION
+        return self.map[y][x] in self.COLLISION
 
 
 class Character:
-    def __init__(self, pos_x, pos_y, image_path, labyrinth : Labyrinth):
+    def __init__(self, pos_x, pos_y, speed, direction, image_path, labyrinth: Labyrinth):
         self.pos_x = pos_x
         self.pos_y = pos_y
+        self.speed = speed
+        self.direction = direction
         self.image = pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-        var = pygame.PixelArray(self.image)
-        var.replace((0, 0, 0, 255), (0, 0, 0, 0))
-        del var
+        pygame.PixelArray(self.image).replace((0, 0, 0, 255), (0, 0, 0, 0))
         self.labyrinth = labyrinth
 
     def draw_character(self):
         screen.blit(self.image, (self.pos_x, self.pos_y))
 
-    def tp(self, x_pixels, y_pixels):
-        if 0 > y_pixels + self.pos_y:
-            self.pos_y = height - y_pixels
-        if y_pixels + self.pos_y >= height * TILE_SIZE:
-            self.pos_y = y_pixels - height * TILE_SIZE
+    @staticmethod
+    def get_front_pos(x, y, direction):
+        if direction[0] == 1:
+            return (x+TILE_SIZE, y+(TILE_SIZE//2))
+        if direction[0] == -1:
+            return (x-1, y+(TILE_SIZE//2))
+        if direction[1] == 1:
+            return (x+(TILE_SIZE//2), y+TILE_SIZE)
+        if direction[1] == -1:
+            return (x+(TILE_SIZE//2), y-1)
 
-        if 0 > x_pixels + self.pos_x:
-            self.pos_x = length - x_pixels
-        elif x_pixels + self.pos_x >= height * TILE_SIZE:
-            self.pos_x = x_pixels - height * TILE_SIZE
+    @staticmethod
+    def pos_in_laby(x, y):
+        return (min(x // TILE_SIZE, length-1), min(y // TILE_SIZE, height-1))
+
+    def tp(self):
+        if self.pos_x <= 0:
+            self.pos_x = TILE_SIZE*(length - 1)
+            return
+        if self. pos_x >= TILE_SIZE*(length - 1):
+            self.pos_x = 0
+            return
         
-    def move(self, x, y):
-        self.tp(x, y)
-        print(x, y)
-        if not self.labyrinth.is_colliding(self.pos_x + x, self.pos_y + y):
-            self.pos_x += x
-            self.pos_y += y
-        print(self.pos_x, self.pos_y)
+    def move(self):
+        new_pos = (self.pos_x + self.direction[0]*self.speed, self.pos_y + self.direction[1]*self.speed)
+        front_pos = self.get_front_pos(*new_pos, self.direction)
+        pos_in_laby = self.pos_in_laby(*front_pos)
+        if self.labyrinth.is_colliding(*pos_in_laby):
+            return
+        self.pos_x, self.pos_y = new_pos
+        self.tp()
+    
+    def reset_direction(self, pos_in_laby):
+        if self.direction[0]:
+            self.pos_y = TILE_SIZE * pos_in_laby[1]
+        if self.direction[1]:
+            self.pos_x = TILE_SIZE * pos_in_laby[0]
 
 
 class Pac_man(Character):
-    keys_directions = {pygame.K_UP: (0,-5), pygame.K_DOWN: (0,5), pygame.K_LEFT: (-5, 0), pygame.K_RIGHT: (5, 0)}
+    keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
     
-    def __init__(self, x, y, labyrinth, image_path = "data/pacman.png", direction = (5, 0)) -> None:
-        Character.__init__(self, x, y, image_path, labyrinth)
-        self.direction = direction
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=7, image_path="data/pacman.png", direction=(1,0)) -> None:
+        Character.__init__(self, x, y, speed, direction, image_path, labyrinth)
+        self.input_direction = None
     
-    def set_direction(self, keys):
-        keys = [key.key for key in keys if key.type == pygame.KEYDOWN]
-        for key, value in self.keys_directions.items():
-            if key in keys:
+    def get_input_direction(self, keys):
+        keys = [key.key for key in keys if key.type == pygame.KEYDOWN] # avoir que les input KEYDOWN
+        for key in keys:
+            if key in self.keys_directions:
+                value = self.keys_directions[key]
                 if value != self.direction:
-                    if not self.labyrinth.is_colliding(self.pos_x + value[0], self.pos_y + value[1]):
-                        self.direction = value
+                    self.input_direction = value
+
+    def set_direction(self):
+        if self.input_direction is not None:
+            front_pos = self.get_front_pos(self.pos_x, self.pos_y, self.input_direction)
+            pos_in_laby = self.pos_in_laby(*front_pos)
+            print(pos_in_laby)
+            if self.labyrinth.is_colliding(*pos_in_laby):
+                #print("coll")
+                return
+            self.direction = self.input_direction
+            self.reset_direction(pos_in_laby)
+            self.input_direction = None
 
     def update(self, keys):
-        self.set_direction(keys)
-        self.move(self.direction[0], self.direction[1])
+        self.get_input_direction(keys)
+        self.set_direction()
+        self.move()
         self.draw_character()
 
 
 class Ghost(Character):
    
-    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png", color=(255, 0, 0)) -> None:
-        Character.__init__(self, x, y, image_path, labyrinth)
-        var = pygame.PixelArray(self.image)
-        var.replace((237, 28, 36, 255), color)
-        del var
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0), color=(255, 0, 0)) -> None:
+        Character.__init__(self, x, y, speed, direction, image_path, labyrinth)
+        pygame.PixelArray(self.image).replace((237, 28, 36, 255), color)
 
 
 class Blinky(Ghost):
    
-    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png") -> None:
-        super().__init__(x, y, labyrinth, image_path, (255, 0, 0))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_path, direction, (255, 0, 0))
 
 
 class Pinky(Ghost):
    
-    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png") -> None:
-        super().__init__(x, y, labyrinth, image_path, (255, 184, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_path, direction, (255, 184, 255))
 
 
 class Inky(Ghost):
    
-    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png") -> None:
-        super().__init__(x, y, labyrinth, image_path, (0, 255, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_path, direction, (0, 255, 255))
 
 
    
 class Clyde(Ghost):
-    def __init__(self, x, y, labyrinth: Labyrinth, image_path="data/ghost.png") -> None:
-        super().__init__(x, y, labyrinth, image_path, (255, 184, 81))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_path, direction, (255, 184, 81))
 
 
     # ==== fonctions ==== #
@@ -157,7 +187,7 @@ screen = pygame.display.set_mode((TILE_SIZE*(length+2), TILE_SIZE * height))
 clock = pygame.time.Clock()
 
 labyrinth = Labyrinth("map.txt")
-player = Pac_man(TILE_SIZE * 13+TILE_SIZE//2,TILE_SIZE*23,labyrinth)
+player = Pac_man(TILE_SIZE * 13+TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 ghost = Ghost(1,1,labyrinth)
 
     # ==== main loop ==== #
