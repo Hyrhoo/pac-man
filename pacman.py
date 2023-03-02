@@ -65,7 +65,6 @@ class Character:
         self.pos_y = pos_y
         self.speed = speed
         self.direction = direction
-        self.direction = direction
         self.image = pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE))
         pygame.PixelArray(self.image).replace((0, 0, 0, 255), (0, 0, 0, 0))
         self.labyrinth = labyrinth
