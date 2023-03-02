@@ -69,33 +69,31 @@ class Labyrinth:
 
 class Character:
 
-    def __init__(self, pos_x, pos_y, speed, direction, image_path, labyrinth: Labyrinth):
+    def __init__(self, pos_x, pos_y, speed, direction, image_paths, labyrinth: Labyrinth):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.speed = speed
         self.direction = direction
-        self.image = pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE))
-        pygame.PixelArray(self.image).replace((0, 0, 0, 255), (0, 0, 0, 0))
+        self.images_index = 0
+        self.images = []
+        for image_path in image_paths:
+            self.images.append(pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
+            pygame.PixelArray(self.images[-1]).replace((0, 0, 0, 255), (0, 0, 0, 0))
         self.labyrinth = labyrinth
 
-    def draw_character(self):
-        """
-        draw the caracter on the screen
-        """
-        screen.blit(self.image, (self.pos_x, self.pos_y))
 
     @staticmethod
     def get_front_pos(x, y, direction):
         """
-        get the position of the pixel on the fronte of the caracter at the given position
+        get the position of the pixel on the front of the caracter at the given position
 
         Args:
-            x (int): the x potition of the caracter
+            x (int): the x position of the caracter
             y (int): the y position of the caracter
             direction (tuple[int]): the direction of the caracter
 
         Returns:
-            tuple[int]: the positioin of the pixel on the middle of the side at the direction of the caracter
+            tuple[int]: the position of the pixel on the middle of the side at the direction of the caracter
         """
         if direction[0] == 1:
             return (x+TILE_SIZE, y+(TILE_SIZE//2))
@@ -130,18 +128,26 @@ class Character:
         if self. pos_x >= TILE_SIZE*(length - 1):
             self.pos_x = 0
             return
+        
+    def can_move(self, new_pos):
+        """Check if the caracter can move"""
+        front_pos = self.get_front_pos(*new_pos, self.direction)
+        pos_in_laby = self.pos_in_laby(*front_pos)
+        return not self.labyrinth.is_colliding(*pos_in_laby)
+
 
     def move(self):
         """
         move the caracter from his direction and his speed
         """
         new_pos = (self.pos_x + self.direction[0]*self.speed, self.pos_y + self.direction[1]*self.speed)
-        front_pos = self.get_front_pos(*new_pos, self.direction)
-        pos_in_laby = self.pos_in_laby(*front_pos)
-        if self.labyrinth.is_colliding(*pos_in_laby):
+        if not self.can_move(new_pos):
             return
         self.pos_x, self.pos_y = new_pos
         self.tp()
+        self.images_index += 1
+        if self.images_index == len(self.images):
+            self.images_index = 0
 
     def reset_direction(self, pos_in_laby):
         """
@@ -160,8 +166,8 @@ class Pac_man(Character):
 
     keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=7, image_path="data/pacman.png", direction=(1,0)) -> None:
-        Character.__init__(self, x, y, speed, direction, image_path, labyrinth)
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=7, image_paths=["data/pacman_1.png", "data/pacman_2.png", "data/pacman_3.png"], direction=(1,0)) -> None:
+        Character.__init__(self, x, y, speed, direction, image_paths, labyrinth)
         self.input_direction = None
 
     def get_input_direction(self, keys):
@@ -188,6 +194,7 @@ class Pac_man(Character):
             if self.labyrinth.is_colliding(*pos_in_laby):
                 return
             self.direction = self.input_direction
+            pos_in_laby = self.pos_in_laby(*front_pos)
             self.reset_direction(pos_in_laby)
             self.input_direction = None
 
@@ -203,37 +210,63 @@ class Pac_man(Character):
         self.move()
         self.draw_character()
 
+    def draw_character(self):
+        """
+        draw the caracter on the screen
+        """
+        # allow to not turn the base image
+        image = self.images[self.images_index].copy()
+        # allow to turn the image
+        if self.direction == (0, -1):
+            image = pygame.transform.rotate(image, 90)
+        elif self.direction == (0, 1):
+            image = pygame.transform.rotate(image, -90)
+        elif self.direction == (-1, 0):
+            image = pygame.transform.rotate(image, 180)
+
+        screen.blit(image, (self.pos_x, self.pos_y))
+
+
 
 class Ghost(Character):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0), color=(255, 0, 0)) -> None:
-        Character.__init__(self, x, y, speed, direction, image_path, labyrinth)
-        pygame.PixelArray(self.image).replace((237, 28, 36, 255), color)
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0), color=(255, 0, 0)) -> None:
+        Character.__init__(self, x, y, speed, direction, image_paths, labyrinth)
+
+        # if self.can_move((self.pos_x+self.direction[0]*TILE_SIZE, self.pos_y+self.direction[1]*TILE_SIZE)):
+        #     return
+        # can be useful to forbid to the ghosts to go back while moving
+
+    def draw_ghost(self):
+        """
+        draw the caracter on the screen
+        """
+        screen.blit(self.image, (self.pos_x, self.pos_y))
 
 
 class Blinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_path, direction, (255, 0, 0))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_paths, direction, (255, 0, 0))
 
 
 class Pinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_path, direction, (255, 184, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_paths, direction, (255, 184, 255))
 
 
 class Inky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_path, direction, (0, 255, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_paths, direction, (0, 255, 255))
 
 
    
 class Clyde(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_path="data/ghost.png", direction=(1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_path, direction, (255, 184, 81))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_paths, direction, (255, 184, 81))
 
 
     # ==== fonctions ==== #
