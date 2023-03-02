@@ -5,7 +5,7 @@ from time import monotonic
 
 GLOBAL_FPS = 30     # FPS global du jeu
 TILE_SIZE = 28      # definition du dessin (carré)
-NUMBRE_IMG = 18     # nombre d'images à charger
+NUMBRE_IMG = 19     # nombre d'images à charger
 length = 28         # hauteur du niveau
 height = 31         # largeur du niveau
 
