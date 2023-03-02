@@ -130,9 +130,7 @@ class Pac_man(Character):
         if self.input_direction is not None:
             front_pos = self.get_front_pos(self.pos_x, self.pos_y, self.input_direction)
             pos_in_laby = self.pos_in_laby(*front_pos)
-            print(pos_in_laby)
             if self.labyrinth.is_colliding(*pos_in_laby):
-                #print("coll")
                 return
             self.direction = self.input_direction
             self.reset_direction(pos_in_laby)
