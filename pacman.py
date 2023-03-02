@@ -220,7 +220,8 @@ class Pac_man(Character):
         if self.direction == (0, -1):
             image = pygame.transform.rotate(image, 90)
         elif self.direction == (0, 1):
-            image = pygame.transform.rotate(image, -90)
+            image = pygame.transform.rotate(image, 90)
+            image = pygame.transform.flip(image, False, True)
         elif self.direction == (-1, 0):
             image = pygame.transform.flip(image, True, False)
 
