@@ -1,14 +1,20 @@
-from fonctions.initialisation import *
-from fonctions.labyrinth import Labyrinth
-from fonctions.character import Character
+import pygame
+
+from parts_of_code.labyrinth import Labyrinth
+from parts_of_code.character import Character
 
 
 class Pac_man(Character):
     keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, image_paths=["data/pacman_1.png", "data/pacman_2.png", "data/pacman_3.png", "data/pacman_4.png", "data/pacman_5.png", "data/pacman_4.png", "data/pacman_3.png", "data/pacman_2.png"], direction=(1,0)) -> None:
-        super().__init__(x, y, speed, direction, image_paths, labyrinth)
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(1,0)) -> None:
+
+        super().__init__(x, y, speed, direction, labyrinth)
         self.input_direction = None
+
+    def load_sprites(self):
+        for index_ in range(1, 6):
+            self.load_sprite(f"pacman/{index_}")
 
     def get_input_direction(self, keys):
         """get the direction enter by the player

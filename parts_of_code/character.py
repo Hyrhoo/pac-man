@@ -1,10 +1,12 @@
-from fonctions.initialisation import *
-from fonctions.labyrinth import Labyrinth
+import pygame
+
+from parts_of_code.labyrinth import Labyrinth
+from parts_of_code.constantes import *
 
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, pos_x, pos_y, speed, direction, image_paths, labyrinth: Labyrinth):
+    def __init__(self, pos_x, pos_y, speed, direction, labyrinth: Labyrinth):
         super().__init__()
         self.pos_x = pos_x
         self.pos_y = pos_y
@@ -12,15 +14,12 @@ class Character(pygame.sprite.Sprite):
         self.direction = direction
         self.labyrinth = labyrinth
         self.sprites = []
-        self.load_sprites(image_paths)
+        self.load_sprites()
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.pos_x, self.pos_y)
 
-    def load_sprites(self, sprites):
-        for sprite in sprites:
-            self.sprites.append(pygame.transform.scale(pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
 
     def set_pos(self, x, y):
         """set the caracter at the given position
@@ -52,6 +51,9 @@ class Character(pygame.sprite.Sprite):
             return (x+(TILE_SIZE//2), y+TILE_SIZE)
         if direction[1] == -1:
             return (x+(TILE_SIZE//2), y-1)
+
+    def load_sprite(self, sprite):
+        self.sprites.append(pygame.transform.scale(pygame.image.load(f"{DATA_DIRECTORY}/{sprite}.png").convert_alpha(), (TILE_SIZE, TILE_SIZE)))
 
     @staticmethod
     def pos_in_laby(x, y):

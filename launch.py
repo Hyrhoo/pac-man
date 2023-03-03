@@ -1,13 +1,14 @@
-from fonctions.initialisation import *
-from fonctions.labyrinth import Labyrinth
-from fonctions.pacman import Pac_man
-from fonctions.ghost import Blinky, Pinky, Inky, Clyde
+from parts_of_code.constantes import *
+from parts_of_code.initialisation import *
+from parts_of_code.labyrinth import *
+from parts_of_code.pacman import *
+from parts_of_code.ghost import *
 
     # ==== init ==== #
 
 player_group = pygame.sprite.Group()
 ghost_group = pygame.sprite.Group()
-labyrinth = Labyrinth("map.txt")
+labyrinth = Labyrinth("map.txt", screen)
 player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 
 blinky = Blinky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, labyrinth)
