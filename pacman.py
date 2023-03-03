@@ -245,7 +245,8 @@ class Ghost(Character):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
                  image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png"],
+                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
+                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png"],
                  anim_len=7, direction=(-1,0), color=(255, 0, 0)) -> None:
         super().__init__(x, y, speed, direction, image_paths, labyrinth)
         self.anim_len = anim_len
@@ -272,7 +273,8 @@ class Blinky(Ghost):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
                  image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png"],
+                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
+                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png"],
                  anim_len=7, direction=(-1,0)) -> None:
         super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (255, 0, 0))
 
@@ -281,7 +283,8 @@ class Pinky(Ghost):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
                  image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png"],
+                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
+                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png"],
                  anim_len=7, direction=(-1,0)) -> None:
         super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (255, 184, 255))
 
@@ -290,7 +293,8 @@ class Inky(Ghost):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
                  image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png"],
+                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
+                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png"],
                  anim_len=7, direction=(-1,0)) -> None:
         super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (0, 255, 255))
 
@@ -300,7 +304,8 @@ class Clyde(Ghost):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
                  image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png"],
+                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
+                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png"],
                  anim_len=7, direction=(-1,0)) -> None:
         super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (255, 184, 81))
 
@@ -323,7 +328,7 @@ player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 
 blinky = Blinky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, labyrinth)
 pinky = Pinky(TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(1, 0))
-inky = Inky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, labyrinth)
+inky = Inky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(0, -1))
 clyde = Clyde(TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, labyrinth)
 
 player_group.add(player)
