@@ -78,7 +78,7 @@ class Character(pygame.sprite.Sprite):
         self.direction = direction
         self.labyrinth = labyrinth
         self.sprites = []
-        self.load_sprires(image_paths)
+        self.load_sprites(image_paths)
         #for image_path in image_paths:
         #    self.sprites.append(pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
         self.current_sprite = 0
@@ -86,7 +86,7 @@ class Character(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.pos_x, self.pos_y)
 
-    def load_sprires(self, sprites):
+    def load_sprites(self, sprites):
         for sprite in sprites:
             self.sprites.append(pygame.transform.scale(pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
 
