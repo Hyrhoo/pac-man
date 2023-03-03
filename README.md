@@ -7,4 +7,4 @@ Il appellera les différents morceaux de code dans le dossier "parts_of_code" (j
 
 Les images sont dans data.
 
-"map.txt" est le fichier contenant les informations nécessaires pour créer la carte du jeu (murs, pac-gommes, ...)
+"map.txt" est le fichier contenant les informations nécessaires pour créer la carte du jeu (murs, pac-gommes, ...).
