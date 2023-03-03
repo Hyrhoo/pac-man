@@ -1,1 +1,0 @@
-data/pacman_1.png data/pacman_2.png data/pacman_3.png data/pacman_4.png data/pacman_5.png data/pacman_4.png data/pacman_3.png data/pacman_2.png
