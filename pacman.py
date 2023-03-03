@@ -78,12 +78,17 @@ class Character(pygame.sprite.Sprite):
         self.direction = direction
         self.labyrinth = labyrinth
         self.sprites = []
-        for image_path in image_paths:
-            self.sprites.append(pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
+        self.load_sprires(image_paths)
+        #for image_path in image_paths:
+        #    self.sprites.append(pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.pos_x, self.pos_y)
+
+    def load_sprires(self, sprites):
+        for sprite in sprites:
+            self.sprites.append(pygame.transform.scale(pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
 
     def set_pos(self, x, y):
         """set the caracter at the given position
@@ -153,12 +158,10 @@ class Character(pygame.sprite.Sprite):
         new_pos = (self.pos_x + round(self.direction[0]*self.speed), self.pos_y + round(self.direction[1]*self.speed))
         if not self.can_move(new_pos):
             self.correction_pos()
-            return
+            return False
         self.set_pos(*new_pos)
         self.tp()
-        self.current_sprite += 1
-        if self.current_sprite >= len(self.sprites):
-            self.current_sprite -= len(self.sprites)
+        return True
 
     def correction_pos(self):
         pos_in_laby = self.pos_in_laby(*self.get_center_pos())
@@ -177,7 +180,6 @@ class Character(pygame.sprite.Sprite):
 
 
 class Pac_man(Character):
-
     keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=10, image_paths=["data/pacman_1.png", "data/pacman_2.png", "data/pacman_3.png", "data/pacman_4.png", "data/pacman_5.png", "data/pacman_4.png", "data/pacman_3.png", "data/pacman_2.png"], direction=(1,0)) -> None:
@@ -217,11 +219,15 @@ class Pac_man(Character):
         """
         self.get_input_direction(keys)
         self.set_direction()
-        self.move()
-        self.animate()
+        have_move = self.move()
+        if have_move:
+            self.animate()
 
     def animate(self):
         """draw the caracter on the screen"""
+        self.current_sprite += 1
+        if self.current_sprite >= len(self.sprites):
+            self.current_sprite -= len(self.sprites)
         # allow to not turn the base image
         self.image = self.sprites[int(self.current_sprite)].copy()
         # allow to turn the image
@@ -235,9 +241,14 @@ class Pac_man(Character):
 
 
 class Ghost(Character):
+    direction_to_sens = {(-1,0): 0, (1,0): 1, (0,-1): 2, (0,1): 3}
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0), color=(255, 0, 0)) -> None:
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
+                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png"],
+                 anim_len=7, direction=(-1,0), color=(255, 0, 0)) -> None:
         super().__init__(x, y, speed, direction, image_paths, labyrinth)
+        self.anim_len = anim_len
+        self.current_sens = self.direction_to_sens[self.direction]
         for image in self.sprites:
             pygame.PixelArray(image).replace((237, 28, 36, 255), color)
 
@@ -248,31 +259,45 @@ class Ghost(Character):
     def draw_ghost(self):
         """draw the caracter on the screen"""
         screen.blit(self.image, (self.pos_x, self.pos_y))
+    
+    def update(self) -> None:
+        self.current_sprite += 1
+        if self.current_sprite >= self.anim_len:
+            self.current_sprite -= self.anim_len
+        self.image = self.sprites[int(self.current_sprite + self.current_sens*self.anim_len)]
 
 
 class Blinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_paths, direction, (255, 0, 0))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
+                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png"],
+                 anim_len=7, direction=(-1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (255, 0, 0))
 
 
 class Pinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_paths, direction, (255, 184, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
+                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png"],
+                 anim_len=7, direction=(-1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (255, 184, 255))
 
 
 class Inky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_paths, direction, (0, 255, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
+                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png"],
+                 anim_len=7, direction=(-1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (0, 255, 255))
 
 
    
 class Clyde(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_paths, direction, (255, 184, 81))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
+                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png"],
+                 anim_len=7, direction=(-1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (255, 184, 81))
 
 
     # ==== fonctions ==== #
@@ -286,7 +311,8 @@ pygame.key.set_repeat(0,0)
 screen = pygame.display.set_mode((TILE_SIZE*(length+2), TILE_SIZE * height))
 clock = pygame.time.Clock()
 
-moving_sprites = pygame.sprite.Group()
+player_group = pygame.sprite.Group()
+ghost_group = pygame.sprite.Group()
 labyrinth = Labyrinth("map.txt")
 player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 
@@ -295,11 +321,11 @@ pinky = Pinky(TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, labyrinth)
 inky = Inky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, labyrinth)
 clyde = Clyde(TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, labyrinth)
 
-moving_sprites.add(player)
-moving_sprites.add(blinky)
-moving_sprites.add(pinky)
-moving_sprites.add(inky)
-moving_sprites.add(clyde)
+player_group.add(player)
+ghost_group.add(blinky)
+ghost_group.add(pinky)
+ghost_group.add(inky)
+ghost_group.add(clyde)
 
     # ==== main loop ==== #
 
@@ -314,8 +340,10 @@ while run:
             if event.key == pygame.K_ESCAPE:
                 run = False
     #player.update(keys)
-    moving_sprites.update(keys)
-    moving_sprites.draw(screen)
+    player_group.update(keys)
+    player_group.draw(screen)
+    ghost_group.update()
+    ghost_group.draw(screen)
     
     pygame.display.flip()
     #print(clock.get_fps())  # juste pour afficher les fps
