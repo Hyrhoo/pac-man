@@ -4,10 +4,11 @@ from time import monotonic
     # ==== variables ==== #
 
 GLOBAL_FPS = 30     # FPS global du jeu
-TILE_SIZE = 28      # definition du dessin (carré)
+TILE_SIZE = 32      # definition du dessin (carré)
 NUMBRE_IMG = 19     # nombre d'images à charger
 length = 28         # hauteur du niveau
 height = 31         # largeur du niveau
+SPEED_MULTI = TILE_SIZE/50
 
     # ==== classes ==== #
 
@@ -15,8 +16,7 @@ class Labyrinth:
     COLLISION = range(3, 19)
 
     def __init__(self, map_file):
-        """
-        initialise les données de la classe en chargeant d'abord les images puis les datas de la map
+        """initialise les données de la classe en chargeant d'abord les images puis les datas de la map
 
 
         Args:
@@ -26,16 +26,13 @@ class Labyrinth:
         self.load_map(map_file)
 
     def load_tiles(self):
-        """
-        charge les images nécessaires à l'affichage du labyrinthe
-        """
+        """charge les images nécessaires à l'affichage du labyrinthe"""
         self.tiles = []
         for n in range(NUMBRE_IMG):
             self.tiles.append(pygame.transform.scale(pygame.image.load(f"data/{n}.png").convert(), (TILE_SIZE, TILE_SIZE)))
 
     def load_map(self, file):
-        """
-        charge le fichier contenant les datas de la map
+        """charge le fichier contenant les datas de la map
 
         Args:
             file (str): le nom du fichier à charger
@@ -46,13 +43,11 @@ class Labyrinth:
                 self.map.append([int(i) for i in line.strip("\n").split()])
 
     def draw_level(self):
-        """
-        affiche le niveau a partir de la liste a deux dimensions self.map[][]
-        """
+        """affiche le niveau a partir de la liste a deux dimensions self.map[][]"""
         for y, ligne in enumerate(self.map):
             for x, case in enumerate(ligne):
                 screen.blit(self.tiles[case], (x * TILE_SIZE, y * TILE_SIZE))
-        pygame.draw.line(screen, "#FFFFFF", (length * TILE_SIZE, 0), (length * TILE_SIZE, height * TILE_SIZE))
+        pygame.draw.line(screen, (255, 255, 255), (length * TILE_SIZE, 0), (length * TILE_SIZE, height * TILE_SIZE))
 
     def is_colliding(self, x, y):
         """return if the cell coresponding to the given position is a wall or not
@@ -66,26 +61,43 @@ class Labyrinth:
         """
         return self.map[y][x] in self.COLLISION
 
+    def get_nbr_gommes(self, count_type=(1, 2)):
+        res = 0
+        for i in self.map:
+            res += sum([1 for j in i if j in count_type])
+        return res
 
-class Character:
+
+class Character(pygame.sprite.Sprite):
 
     def __init__(self, pos_x, pos_y, speed, direction, image_paths, labyrinth: Labyrinth):
+        super().__init__()
         self.pos_x = pos_x
         self.pos_y = pos_y
-        self.speed = speed
+        self.speed = speed * SPEED_MULTI
         self.direction = direction
-        self.images_index = 0
-        self.images = []
-        for image_path in image_paths:
-            self.images.append(pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
-            pygame.PixelArray(self.images[-1]).replace((0, 0, 0, 255), (0, 0, 0, 0))
         self.labyrinth = labyrinth
+        self.sprites = []
+        for image_path in image_paths:
+            self.sprites.append(pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
+        self.current_sprite = 0
+        self.image = self.sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (self.pos_x, self.pos_y)
 
+    def set_pos(self, x, y):
+        """set the caracter at the given position
+
+        Args:
+            x (int): the x position of the caracter
+            y (int): the y position of the caracter
+        """
+        self.pos_x, self.pos_y = x, y
+        self.rect.topleft = (x, y)
 
     @staticmethod
     def get_front_pos(x, y, direction):
-        """
-        get the position of the pixel on the front of the caracter at the given position
+        """get the position of the pixel on the front of the caracter at the given position
 
         Args:
             x (int): the x position of the caracter
@@ -106,8 +118,7 @@ class Character:
 
     @staticmethod
     def pos_in_laby(x, y):
-        """
-        give the corresponding position in the labyrinth for the givern position
+        """give the corresponding position in the labyrinth for the givern position
 
         Args:
             x (int): the x position in pixel
@@ -118,15 +129,16 @@ class Character:
         """
         return (min(x // TILE_SIZE, length-1), min(y // TILE_SIZE, height-1))
 
+    def get_center_pos(self):
+        return self.pos_x+(TILE_SIZE//2), self.pos_y+(TILE_SIZE//2)
+
     def tp(self):
-        """
-        telepost the caracter to the opposite side if he is out of the labyrinth
-        """
+        """telepost the caracter to the opposite side if he is out of the labyrinth"""
         if self.pos_x <= 0:
-            self.pos_x = TILE_SIZE*(length - 1)
+            self.set_pos(TILE_SIZE*(length - 1), self.pos_y)
             return
         if self. pos_x >= TILE_SIZE*(length - 1):
-            self.pos_x = 0
+            self.set_pos(0, self.pos_y)
             return
         
     def can_move(self, new_pos):
@@ -137,42 +149,43 @@ class Character:
 
 
     def move(self):
-        """
-        move the caracter from his direction and his speed
-        """
-        new_pos = (self.pos_x + self.direction[0]*self.speed, self.pos_y + self.direction[1]*self.speed)
+        """move the caracter from his direction and his speed"""
+        new_pos = (self.pos_x + round(self.direction[0]*self.speed), self.pos_y + round(self.direction[1]*self.speed))
         if not self.can_move(new_pos):
+            self.correction_pos()
             return
-        self.pos_x, self.pos_y = new_pos
+        self.set_pos(*new_pos)
         self.tp()
-        self.images_index += 0.25
-        if self.images_index == len(self.images):
-            self.images_index = 0
+        self.current_sprite += 1
+        if self.current_sprite >= len(self.sprites):
+            self.current_sprite -= len(self.sprites)
 
+    def correction_pos(self):
+        pos_in_laby = self.pos_in_laby(*self.get_center_pos())
+        self.set_pos(pos_in_laby[0]*TILE_SIZE, pos_in_laby[1]*TILE_SIZE)
+    
     def reset_direction(self, pos_in_laby):
-        """
-        reset the position of the caracter when he change direction so that he stays in the middle of its row / column
+        """reset the position of the caracter when he change direction so that he stays in the middle of its row / column
 
         Args:
             pos_in_laby (tuple[int]): the actual pos in the labyrinth of the caracter
         """
         if self.direction[0]:
-            self.pos_y = TILE_SIZE * pos_in_laby[1]
+            self.set_pos(self.pos_x, TILE_SIZE * pos_in_laby[1])
         if self.direction[1]:
-            self.pos_x = TILE_SIZE * pos_in_laby[0]
+            self.set_pos(TILE_SIZE * pos_in_laby[0], self.pos_y)
 
 
 class Pac_man(Character):
 
     keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=7, image_paths=["data/pacman_1.png", "data/pacman_2.png", "data/pacman_3.png", "data/pacman_4.png"], direction=(1,0)) -> None:
-        Character.__init__(self, x, y, speed, direction, image_paths, labyrinth)
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, image_paths=["data/pacman_1.png", "data/pacman_2.png", "data/pacman_3.png", "data/pacman_4.png", "data/pacman_5.png", "data/pacman_4.png", "data/pacman_3.png", "data/pacman_2.png"], direction=(1,0)) -> None:
+        super().__init__(x, y, speed, direction, image_paths, labyrinth)
         self.input_direction = None
 
     def get_input_direction(self, keys):
-        """
-        get the direction enter by the player
+        """get the direction enter by the player
 
         Args:
             keys (tuple[Pygame Event]): the event enter this frame
@@ -185,9 +198,7 @@ class Pac_man(Character):
                     self.input_direction = value
 
     def set_direction(self):
-        """
-        change the direction of the player if he has enter one and the caracter can change direction
-        """
+        """change the direction of the player if he has enter one and the caracter can change direction"""
         if self.input_direction is not None:
             front_pos = self.get_front_pos(self.pos_x, self.pos_y, self.input_direction)
             pos_in_laby = self.pos_in_laby(*front_pos)
@@ -199,8 +210,7 @@ class Pac_man(Character):
             self.input_direction = None
 
     def update(self, keys):
-        """
-        call all the required fonction for the update of the caracter each frame 
+        """call all the required fonction for the update of the caracter each frame 
 
         Args:
             keys (tuple[Pygame Event]): the event enter this frame
@@ -208,40 +218,35 @@ class Pac_man(Character):
         self.get_input_direction(keys)
         self.set_direction()
         self.move()
-        self.draw_character()
+        self.animate()
 
-    def draw_character(self):
-        """
-        draw the caracter on the screen
-        """
+    def animate(self):
+        """draw the caracter on the screen"""
         # allow to not turn the base image
-        image = self.images[int(self.images_index)].copy()
+        self.image = self.sprites[int(self.current_sprite)].copy()
         # allow to turn the image
         if self.direction == (0, -1):
-            image = pygame.transform.rotate(image, 90)
+            self.image = pygame.transform.rotate(self.image, 90)
         elif self.direction == (0, 1):
-            image = pygame.transform.rotate(image, 90)
-            image = pygame.transform.flip(image, False, True)
+            self.image = pygame.transform.rotate(self.image, 90)
+            self.image = pygame.transform.flip(self.image, False, True)
         elif self.direction == (-1, 0):
-            image = pygame.transform.flip(image, True, False)
-
-        screen.blit(image, (self.pos_x, self.pos_y))
-
+            self.image = pygame.transform.flip(self.image, True, False)
 
 
 class Ghost(Character):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=5, image_paths=["data/ghost.png"], direction=(1,0), color=(255, 0, 0)) -> None:
-        Character.__init__(self, x, y, speed, direction, image_paths, labyrinth)
+        super().__init__(x, y, speed, direction, image_paths, labyrinth)
+        for image in self.sprites:
+            pygame.PixelArray(image).replace((237, 28, 36, 255), color)
 
         # if self.can_move((self.pos_x+self.direction[0]*TILE_SIZE, self.pos_y+self.direction[1]*TILE_SIZE)):
         #     return
         # can be useful to forbid to the ghosts to go back while moving
 
     def draw_ghost(self):
-        """
-        draw the caracter on the screen
-        """
+        """draw the caracter on the screen"""
         screen.blit(self.image, (self.pos_x, self.pos_y))
 
 
@@ -277,15 +282,27 @@ class Clyde(Ghost):
     # ==== init ==== #
 
 pygame.init()
+pygame.key.set_repeat(0,0)
 screen = pygame.display.set_mode((TILE_SIZE*(length+2), TILE_SIZE * height))
 clock = pygame.time.Clock()
 
+moving_sprites = pygame.sprite.Group()
 labyrinth = Labyrinth("map.txt")
-player = Pac_man(TILE_SIZE * 13+TILE_SIZE//2, TILE_SIZE*23, labyrinth)
-ghost = Ghost(1,1,labyrinth)
+player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
+
+blinky = Blinky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, labyrinth)
+pinky = Pinky(TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, labyrinth)
+inky = Inky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, labyrinth)
+clyde = Clyde(TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, labyrinth)
+
+moving_sprites.add(player)
+moving_sprites.add(blinky)
+moving_sprites.add(pinky)
+moving_sprites.add(inky)
+moving_sprites.add(clyde)
 
     # ==== main loop ==== #
-pygame.key.set_repeat(0,0)
+
 run = True
 while run:
     labyrinth.draw_level()
@@ -296,7 +313,9 @@ while run:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 run = False
-    player.update(keys)
+    #player.update(keys)
+    moving_sprites.update(keys)
+    moving_sprites.draw(screen)
     
     pygame.display.flip()
     #print(clock.get_fps())  # juste pour afficher les fps
