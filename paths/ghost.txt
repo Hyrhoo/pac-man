@@ -1,0 +1,4 @@
+data/ghost_left_1.png data/ghost_left_2.png data/ghost_left_3.png data/ghost_left_4.png data/ghost_left_5.png data/ghost_left_6.png data/ghost_left_7.png 
+data/ghost_right_1.png data/ghost_right_2.png data/ghost_right_3.png data/ghost_right_4.png data/ghost_right_5.png data/ghost_right_6.png data/ghost_right_7.png 
+data/ghost_up_1.png data/ghost_up_2.png data/ghost_up_3.png data/ghost_up_4.png data/ghost_up_5.png data/ghost_up_6.png data/ghost_up_7.png 
+data/ghost_down_1.png data/ghost_down_2.png data/ghost_down_3.png data/ghost_down_4.png data/ghost_down_5.png data/ghost_down_6.png data/ghost_down_7.png

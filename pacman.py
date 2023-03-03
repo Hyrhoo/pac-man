@@ -2,6 +2,7 @@ import pygame
 from time import monotonic
 
     # ==== variables ==== #
+DATA_DIRECTORY = "data"
 
 GLOBAL_FPS = 30     # FPS global du jeu
 TILE_SIZE = 32      # definition du dessin (carré)
@@ -29,7 +30,7 @@ class Labyrinth:
         """charge les images nécessaires à l'affichage du labyrinthe"""
         self.tiles = []
         for n in range(NUMBRE_IMG):
-            self.tiles.append(pygame.transform.scale(pygame.image.load(f"data/{n}.png").convert(), (TILE_SIZE, TILE_SIZE)))
+            self.tiles.append(pygame.transform.scale(pygame.image.load(f"data/tiles/{n}.png").convert(), (TILE_SIZE, TILE_SIZE)))
 
     def load_map(self, file):
         """charge le fichier contenant les datas de la map
@@ -70,7 +71,7 @@ class Labyrinth:
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, pos_x, pos_y, speed, direction, image_paths, labyrinth: Labyrinth):
+    def __init__(self, pos_x, pos_y, speed, direction, labyrinth: Labyrinth):
         super().__init__()
         self.pos_x = pos_x
         self.pos_y = pos_y
@@ -78,17 +79,12 @@ class Character(pygame.sprite.Sprite):
         self.direction = direction
         self.labyrinth = labyrinth
         self.sprites = []
-        self.load_sprires(image_paths)
-        #for image_path in image_paths:
-        #    self.sprites.append(pygame.transform.scale(pygame.image.load(image_path).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
+        self.load_sprites()
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.pos_x, self.pos_y)
 
-    def load_sprires(self, sprites):
-        for sprite in sprites:
-            self.sprites.append(pygame.transform.scale(pygame.image.load(sprite).convert_alpha(), (TILE_SIZE, TILE_SIZE)))
 
     def set_pos(self, x, y):
         """set the caracter at the given position
@@ -120,6 +116,9 @@ class Character(pygame.sprite.Sprite):
             return (x+(TILE_SIZE//2), y+TILE_SIZE)
         if direction[1] == -1:
             return (x+(TILE_SIZE//2), y-1)
+
+    def load_sprite(self, sprite):
+        self.sprites.append(pygame.transform.scale(pygame.image.load(f"{DATA_DIRECTORY}/{sprite}.png").convert_alpha(), (TILE_SIZE, TILE_SIZE)))
 
     @staticmethod
     def pos_in_laby(x, y):
@@ -182,9 +181,14 @@ class Character(pygame.sprite.Sprite):
 class Pac_man(Character):
     keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, image_paths=["data/pacman_1.png", "data/pacman_2.png", "data/pacman_3.png", "data/pacman_4.png", "data/pacman_5.png", "data/pacman_4.png", "data/pacman_3.png", "data/pacman_2.png"], direction=(1,0)) -> None:
-        super().__init__(x, y, speed, direction, image_paths, labyrinth)
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(1,0)) -> None:
+
+        super().__init__(x, y, speed, direction, labyrinth)
         self.input_direction = None
+
+    def load_sprites(self):
+        for index_ in range(1, 6):
+            self.load_sprite(f"pacman/{index_}")
 
     def get_input_direction(self, keys):
         """get the direction enter by the player
@@ -242,14 +246,10 @@ class Pac_man(Character):
 
 class Ghost(Character):
     direction_to_sens = {(-1,0): 0, (1,0): 1, (0,-1): 2, (0,1): 3}
+    base_path = "data/ghost"
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, anim_len=7, direction=(-1,0), color=(255, 0, 0)) -> None:
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
-                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
-                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png",
-                              "data/ghost_down_1.png", "data/ghost_down_2.png", "data/ghost_down_3.png", "data/ghost_down_4.png", "data/ghost_down_5.png", "data/ghost_down_6.png", "data/ghost_down_7.png"],
-                 anim_len=7, direction=(-1,0), color=(255, 0, 0)) -> None:
-        super().__init__(x, y, speed, direction, image_paths, labyrinth)
+        super().__init__(x, y, speed, direction, labyrinth)
         self.anim_len = anim_len
         self.current_sens = self.direction_to_sens[self.direction]
         for image in self.sprites:
@@ -258,6 +258,11 @@ class Ghost(Character):
         # if self.can_move((self.pos_x+self.direction[0]*TILE_SIZE, self.pos_y+self.direction[1]*TILE_SIZE)):
         #     return
         # can be useful to forbid to the ghosts to go back while moving
+
+    def load_sprites(self):
+        for direction in ("left", "right", "up", "down"):
+            for index_ in range(1, 8):
+                self.load_sprite(f"ghost/{direction}/{index_}")
 
     def draw_ghost(self):
         """draw the caracter on the screen"""
@@ -272,47 +277,27 @@ class Ghost(Character):
 
 class Blinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
-                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
-                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png",
-                              "data/ghost_down_1.png", "data/ghost_down_2.png", "data/ghost_down_3.png", "data/ghost_down_4.png", "data/ghost_down_5.png", "data/ghost_down_6.png", "data/ghost_down_7.png"],
-                 anim_len=7, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (255, 0, 0))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, anim_len=7, direction=(-1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, anim_len, direction, (255, 0, 0))
 
 
 class Pinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
-                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
-                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png",
-                              "data/ghost_down_1.png", "data/ghost_down_2.png", "data/ghost_down_3.png", "data/ghost_down_4.png", "data/ghost_down_5.png", "data/ghost_down_6.png", "data/ghost_down_7.png"],
-                 anim_len=7, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (255, 184, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, anim_len=7, direction=(-1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, anim_len, direction, (255, 184, 255))
 
 
 class Inky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
-                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
-                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png",
-                              "data/ghost_down_1.png", "data/ghost_down_2.png", "data/ghost_down_3.png", "data/ghost_down_4.png", "data/ghost_down_5.png", "data/ghost_down_6.png", "data/ghost_down_7.png"],
-                 anim_len=7, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (0, 255, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, anim_len=7, direction=(-1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, anim_len, direction, (0, 255, 255))
 
 
    
 class Clyde(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=5,
-                 image_paths=["data/ghost_left_1.png", "data/ghost_left_2.png", "data/ghost_left_3.png", "data/ghost_left_4.png", "data/ghost_left_5.png", "data/ghost_left_6.png", "data/ghost_left_7.png",
-                              "data/ghost_right_1.png", "data/ghost_right_2.png", "data/ghost_right_3.png", "data/ghost_right_4.png", "data/ghost_right_5.png", "data/ghost_right_6.png", "data/ghost_right_7.png",
-                              "data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png",
-                              "data/ghost_down_1.png", "data/ghost_down_2.png", "data/ghost_down_3.png", "data/ghost_down_4.png", "data/ghost_down_5.png", "data/ghost_down_6.png", "data/ghost_down_7.png"],
-                 anim_len=7, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, image_paths, anim_len, direction, (255, 184, 81))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=5, anim_len=7, direction=(-1,0)) -> None:
+        super().__init__(x, y, labyrinth, speed, anim_len, direction, (255, 184, 81))
 
 
     # ==== fonctions ==== #

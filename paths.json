@@ -1,0 +1,11 @@
+{"ghost" : {
+    "left":
+    ["1.png", "2.png", "3.png", "_4.png", "5.png", "6.png", "7.png"],
+    "right":
+    ["1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png"],
+    "up":
+    ["data/ghost_up_1.png", "data/ghost_up_2.png", "data/ghost_up_3.png", "data/ghost_up_4.png", "data/ghost_up_5.png", "data/ghost_up_6.png", "data/ghost_up_7.png"],
+    "down":
+    ["data/ghost_down_1.png", "data/ghost_down_2.png", "data/ghost_down_3.png", "data/ghost_down_4.png", "data/ghost_down_5.png", "data/ghost_down_6.png", "data/ghost_down_7.png"]
+}
+}
