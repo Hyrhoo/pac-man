@@ -1,5 +1,5 @@
-from classes.initialisation import *
-from classes.labyrinth import Labyrinth
+from scripts.initialisation import *
+from scripts.labyrinth import Labyrinth
 
 
 class Character(pygame.sprite.Sprite):

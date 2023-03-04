@@ -1,4 +1,4 @@
-from classes.initialisation import *
+from scripts.initialisation import *
 
 class Labyrinth:
     COLLISION = range(3, 19)

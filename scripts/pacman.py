@@ -1,6 +1,6 @@
-from classes.initialisation import *
-from classes.labyrinth import Labyrinth
-from classes.character import Character
+from scripts.initialisation import *
+from scripts.labyrinth import Labyrinth
+from scripts.character import Character
 
 
 class Pac_man(Character):

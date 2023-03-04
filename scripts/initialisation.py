@@ -1,5 +1,5 @@
 import pygame
-from classes.constantes import *
+from scripts.constantes import *
 
 pygame.init()
 pygame.key.set_repeat(0,0)

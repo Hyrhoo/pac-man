@@ -1,6 +1,6 @@
-from classes.initialisation import *
-from classes.labyrinth import Labyrinth
-from classes.character import Character
+from scripts.initialisation import *
+from scripts.labyrinth import Labyrinth
+from scripts.character import Character
 
 class Ghost(Character):
     direction_to_sens = {(-1,0): 0, (1,0): 1, (0,-1): 2, (0,1): 3}
