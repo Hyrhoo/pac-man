@@ -17,7 +17,9 @@ class Character(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.pos_x, self.pos_y)
-
+    
+    def load_sprites(self):
+        pass
 
     def set_pos(self, x, y):
         """set the caracter at the given position

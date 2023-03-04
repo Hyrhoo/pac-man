@@ -18,8 +18,8 @@ class Ghost(Character):
 
     def load_sprites(self):
         for direction in ("left", "right", "up", "down"):
-            for index_ in range(1, NUMBER_IMG_GHOSTS+1):
-                self.load_sprite(f"ghost/{direction}/{index_}")
+            for nbr_img in range(1, NUMBER_IMG_GHOSTS+1):
+                self.load_sprite(f"ghost/{direction}/{nbr_img}")
 
     def draw_ghost(self):
         """draw the caracter on the screen"""

@@ -12,8 +12,8 @@ class Pac_man(Character):
         self.input_direction = None
 
     def load_sprites(self):
-        for index_ in range(1, NUMBER_IMG_PACMAN+1):
-            self.load_sprite(f"pacman/{index_}")
+        for nbr_img in range(1, NUMBER_IMG_PACMAN+1):
+            self.load_sprite(f"pacman/{nbr_img}")
 
     def get_input_direction(self, keys):
         """get the direction enter by the player
