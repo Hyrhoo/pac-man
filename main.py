@@ -1,7 +1,7 @@
-from classes.initialisation import *
-from classes.labyrinth import *
-from classes.pacman import *
-from classes.ghost import *
+from scripts.initialisation import *
+from scripts.labyrinth import *
+from scripts.pacman import *
+from scripts.ghost import *
 
     # ==== init ==== #
 
