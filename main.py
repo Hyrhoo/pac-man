@@ -1,8 +1,7 @@
-from parts_of_code.constantes import *
-from parts_of_code.initialisation import *
-from parts_of_code.labyrinth import *
-from parts_of_code.pacman import *
-from parts_of_code.ghost import *
+from classes.initialisation import *
+from classes.labyrinth import *
+from classes.pacman import *
+from classes.ghost import *
 
     # ==== init ==== #
 

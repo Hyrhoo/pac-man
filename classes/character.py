@@ -1,7 +1,5 @@
-import pygame
-
-from parts_of_code.labyrinth import Labyrinth
-from parts_of_code.constantes import *
+from classes.initialisation import *
+from classes.labyrinth import Labyrinth
 
 
 class Character(pygame.sprite.Sprite):

@@ -1,7 +1,6 @@
-import pygame
-
-from parts_of_code.labyrinth import Labyrinth
-from parts_of_code.character import Character
+from classes.initialisation import *
+from classes.labyrinth import Labyrinth
+from classes.character import Character
 
 
 class Pac_man(Character):
@@ -13,7 +12,7 @@ class Pac_man(Character):
         self.input_direction = None
 
     def load_sprites(self):
-        for index_ in range(1, 6):
+        for index_ in range(1, NUMBER_IMG_PACMAN+1):
             self.load_sprite(f"pacman/{index_}")
 
     def get_input_direction(self, keys):
@@ -56,8 +55,8 @@ class Pac_man(Character):
     def animate(self):
         """draw the caracter on the screen"""
         self.current_sprite += 1
-        if self.current_sprite >= len(self.sprites):
-            self.current_sprite -= len(self.sprites)
+        if self.current_sprite >= NUMBER_IMG_PACMAN:
+            self.current_sprite -= NUMBER_IMG_PACMAN
         # allow to not turn the base image
         self.image = self.sprites[int(self.current_sprite)].copy()
         # allow to turn the image

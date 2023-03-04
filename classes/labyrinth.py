@@ -1,6 +1,4 @@
-import pygame
-
-from parts_of_code.constantes import *
+from classes.initialisation import *
 
 class Labyrinth:
     COLLISION = range(3, 19)

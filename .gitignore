@@ -4,4 +4,5 @@
 /pacman_sujet2.py
 /sujet.txt
 /test.py
-/fonctions/__pycache__
+/classes/__pycache__
+/__pycache__
