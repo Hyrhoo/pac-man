@@ -26,7 +26,7 @@ class Ghost(Character):
         screen.blit(self.image, (self.pos_x, self.pos_y))
     
     def update(self) -> None:
-        self.current_sprite += 0.5
+        self.current_sprite += 1
         if self.current_sprite >= NUMBER_IMG_GHOSTS:
             self.current_sprite -= NUMBER_IMG_GHOSTS
         self.image = self.sprites[int(self.current_sprite + self.current_sens*NUMBER_IMG_GHOSTS)]
