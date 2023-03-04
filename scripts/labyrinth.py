@@ -18,7 +18,7 @@ class Labyrinth:
         """charge les images nécessaires à l'affichage du labyrinthe"""
         self.tiles = []
         for n in range(NUMBRE_IMG):
-            self.tiles.append(pygame.transform.scale(pygame.image.load(f"data/tiles/{n}.png").convert(), (TILE_SIZE, TILE_SIZE)))
+            self.tiles.append(pygame.transform.scale(pygame.image.load(f"{DATA_DIRECTORY}/tiles/{n}.png").convert(), (TILE_SIZE, TILE_SIZE)))
 
     def load_map(self, file):
         """charge le fichier contenant les datas de la map

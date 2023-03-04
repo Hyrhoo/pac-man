@@ -7,7 +7,7 @@ from scripts.ghost import *
 
 player_group = pygame.sprite.Group()
 ghost_group = pygame.sprite.Group()
-labyrinth = Labyrinth("map.txt", screen)
+labyrinth = Labyrinth(f"{DATA_DIRECTORY}/map.txt", screen)
 player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 
 blinky = Blinky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, labyrinth)
