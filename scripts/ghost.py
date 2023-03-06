@@ -20,10 +20,6 @@ class Ghost(Character):
         for direction in ("left", "right", "up", "down"):
             for nbr_img in range(1, NUMBER_IMG_GHOSTS+1):
                 self.load_sprite(f"ghost/{direction}/{nbr_img}")
-
-    def draw_ghost(self):
-        """draw the caracter on the screen"""
-        screen.blit(self.image, (self.pos_x, self.pos_y))
     
     def update(self) -> None:
         self.current_sprite += 1

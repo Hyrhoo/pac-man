@@ -36,7 +36,7 @@ class Labyrinth:
         for y, ligne in enumerate(self.map):
             for x, case in enumerate(ligne):
                 self.screen.blit(self.tiles[case], (x * TILE_SIZE, y * TILE_SIZE))
-        pygame.draw.line(self.screen, (255, 255, 255), (length * TILE_SIZE, 0), (length * TILE_SIZE, height * TILE_SIZE))
+        pygame.draw.line(self.screen, (255, 255, 255), (WIDTH * TILE_SIZE, 0), (WIDTH * TILE_SIZE, HEIGHT * TILE_SIZE))
 
     def is_colliding(self, x, y):
         """return if the cell coresponding to the given position is a wall or not
@@ -55,3 +55,80 @@ class Labyrinth:
         for i in self.map:
             res += sum([1 for j in i if j in count_type])
         return res
+    
+    def get_possible_cells(self, x, y):
+        around = []
+        for new_x, new_y in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+            node_position = (x + new_x, y + new_y)
+
+            if node_position[0] > (WIDTH - 1) or node_position[0] < 0 or node_position[1] > (HEIGHT -1) or node_position[1] < 0: continue
+            if self.is_colliding(*node_position): continue
+
+            around.append(node_position)
+        return around
+    
+    def astar(self, start, end):
+        start_node = Node(None, start)
+        start_node.g = start_node.h = start_node.f = 0
+        end_node = Node(None, end)
+        end_node.g = end_node.h = end_node.f = 0
+
+        open_list = []
+        closed_list = []
+        open_list.append(start_node)
+
+        while open_list:
+            current_node = open_list[0]
+            current_index = 0
+            for index, item in enumerate(open_list):
+                if item.f < current_node.f:
+                    current_node = item
+                    current_index = index
+            
+            open_list.pop(current_index)
+            closed_list.append(current_node)
+
+            # fin
+            if current_node == end_node:
+                path = []
+                current = current_node
+                while current is not None:
+                    path.append(current.position)
+                    current = current.parent
+                return path[::-1]
+            
+            # génération des noeux des cases adjacentes
+            children = [Node(current_node, i) for i in self.get_possible_cells(*current_node.position)]
+            
+            # récupération des bons noeux
+            for child in children:
+                if child in closed_list:
+                    continue
+                child.g = current_node.g + 1
+                child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
+                child.f = child.g + child.h
+
+                for open_node in open_list:
+                    if child == open_node and child.g > open_node.g:
+                        break
+                else:
+                    open_list.append(child)
+
+
+class Node():
+    """A node class for A* Pathfinding"""
+
+    def __init__(self, parent=None, position=None):
+        self.parent = parent
+        self.position = position
+
+        self.g = 0
+        self.h = 0
+        self.f = 0
+
+    def __eq__(self, other):
+        return self.position == other.position
+    
+    def __str__(self):
+        return str(self.position)
+    

@@ -66,7 +66,7 @@ class Character(pygame.sprite.Sprite):
         Returns:
             int: the corresponding position in the labyrinth
         """
-        return (min(x // TILE_SIZE, length-1), min(y // TILE_SIZE, height-1))
+        return (min(x // TILE_SIZE, WIDTH-1), min(y // TILE_SIZE, HEIGHT-1))
 
     def get_center_pos(self):
         return self.pos_x+(TILE_SIZE//2), self.pos_y+(TILE_SIZE//2)
@@ -74,9 +74,9 @@ class Character(pygame.sprite.Sprite):
     def tp(self):
         """telepost the caracter to the opposite side if he is out of the labyrinth"""
         if self.pos_x <= 0:
-            self.set_pos(TILE_SIZE*(length - 1), self.pos_y)
+            self.set_pos(TILE_SIZE*(WIDTH - 1), self.pos_y)
             return
-        if self. pos_x >= TILE_SIZE*(length - 1):
+        if self. pos_x >= TILE_SIZE*(WIDTH - 1):
             self.set_pos(0, self.pos_y)
             return
         
