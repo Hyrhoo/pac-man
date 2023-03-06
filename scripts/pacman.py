@@ -10,6 +10,7 @@ class Pac_man(Character):
 
         super().__init__(x, y, speed, direction, labyrinth)
         self.input_direction = None
+        self.score = 0
 
     def load_sprites(self):
         for nbr_img in range(1, NUMBER_IMG_PACMAN+1):
@@ -41,7 +42,8 @@ class Pac_man(Character):
             self.input_direction = None
 
     def update(self, keys):
-        """call all the required fonction for the update of the caracter each frame 
+        """call all the required functions for the update of the caracter each frame
+
 
         Args:
             keys (tuple[Pygame Event]): the event enter this frame
@@ -51,6 +53,22 @@ class Pac_man(Character):
         have_move = self.move()
         if have_move:
             self.animate()
+            self.eat()
+
+
+    def eat(self):
+        """Try to eat everything on his way !"""
+        x, y = self.get_center_pos()
+        x //= TILE_SIZE
+        y //= TILE_SIZE
+        case = self.labyrinth.map[y][x]
+        if case == 1:
+            self.score += 10
+            self.labyrinth.change_tile(x, y, 0)
+        elif case == 2:
+            self.score += 50
+            self.labyrinth.change_tile(x, y, 0)
+
 
     def animate(self):
         """draw the caracter on the screen"""

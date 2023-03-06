@@ -64,10 +64,13 @@ class Labyrinth:
         for new_x, new_y in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             node_position = (x + new_x, y + new_y)
             around.append(node_position)
-        around = filter(lambda x: (0 <= x[0] < WIDTH and 0 <= x[1] < HEIGHT) and not self.is_colliding(*x, True), around)
-        return around
+        around = map(lambda x: (WIDTH - 1, x[1]) if x[0] < 0 else (0, x[1]) if x[0] >= WIDTH else (x[0], x[1]), around)
+        around = filter(lambda x: (0 <= x[1] < HEIGHT) and not self.is_colliding(*x, True), around)
+        return tuple(around)
     
     def astar(self, start, end):
+        if start == end:
+            return [start, start]
         start_node = Node(None, start)
         start_node.g = start_node.h = start_node.f = 0
         end_node = Node(None, end)
@@ -113,6 +116,9 @@ class Labyrinth:
                         break
                 else:
                     open_list.append(child)
+    
+    def change_tile(self, x, y, tile):
+        self.map[y][x] = tile
 
 
 class Node():

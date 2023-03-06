@@ -10,8 +10,8 @@ Les images sont dans data.
 les commandes:
 - `haut` pour monter
 - `bas` pour descendre
-- `gauche` pour allez à gauche
-- `droite` pour allez à droite
+- `gauche` pour aller à gauche
+- `droite` pour aller à droite
 
 ## [scoring system](https://pacman.fandom.com/wiki/Point_Configurations):
 
