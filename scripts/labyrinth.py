@@ -5,8 +5,6 @@ class Labyrinth:
 
     def __init__(self, map_file, screen):
         """initialise les données de la classe en chargeant d'abord les images puis les datas de la map
-
-
         Args:
             map_file (str): le nom du fichier à charger
         """
@@ -22,7 +20,6 @@ class Labyrinth:
 
     def load_map(self, file):
         """charge le fichier contenant les datas de la map
-
         Args:
             file (str): le nom du fichier à charger
         """
@@ -40,11 +37,9 @@ class Labyrinth:
 
     def is_colliding(self, x, y, ghost=False):
         """return if the cell coresponding to the given position is a wall or not
-
         Args:
             x (int): x position in the labyrinth
             y (int): y position in the labyrinth
-
         Returns:
             bool: True if the cell is a wall, False otherways
         """
@@ -63,14 +58,14 @@ class Labyrinth:
         around = []
         for new_x, new_y in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             node_position = (x + new_x, y + new_y)
-
-            if 0 <= node_position[0] < WIDTH and 0 <= node_position[1] < HEIGHT and self.is_colliding(*node_position, True): continue
-
             around.append(node_position)
-        #around = filter(lambda x: (0 <= x[0] < WIDTH and 0 <= x[1] < HEIGHT) and not self.is_colliding(*x, True), around)
-        return around
+        around = map(lambda x: (WIDTH - 1, x[1]) if x[0] < 0 else (0, x[1]) if x[0] >= WIDTH else (x[0], x[1]), around)
+        around = filter(lambda x: (0 <= x[1] < HEIGHT) and not self.is_colliding(*x, True), around)
+        return tuple(around)
     
     def astar(self, start, end):
+        if start == end:
+            return [start, start]
         start_node = Node(None, start)
         start_node.g = start_node.h = start_node.f = 0
         end_node = Node(None, end)
@@ -116,6 +111,9 @@ class Labyrinth:
                         break
                 else:
                     open_list.append(child)
+    
+    def change_tile(self, x, y, tile):
+        self.map[y][x] = tile
 
 
 class Node():

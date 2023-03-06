@@ -3,34 +3,41 @@ from scripts.labyrinth import *
 from scripts.pacman import *
 from scripts.ghost import *
 
-    # ==== init ==== #
 
-player_group = pygame.sprite.Group()
-ghost_group = pygame.sprite.Group()
+def reset():
+    ghost_group = pygame.sprite.Group()
+    player_group = pygame.sprite.Group()
+
+    player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
+
+
+    blinky = Blinky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, labyrinth)
+    pinky = Pinky(TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(1, 0))
+    inky = Inky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(0, -1))
+    clyde = Clyde(TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(0, 1))
+
+    player_group.add(player)
+    ghost_group.add(blinky)
+    ghost_group.add(pinky)
+    ghost_group.add(inky)
+    ghost_group.add(clyde)
+
+    return player_group, ghost_group
+
+# ==== init ==== #
+
+
 labyrinth = Labyrinth(f"{DATA_DIRECTORY}/map.txt", screen)
-player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 
-blinky = Blinky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, labyrinth)
-pinky = Pinky(TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(1, 0))
-inky = Inky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(0, -1))
-clyde = Clyde(TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(0, 1))
-
-player_group.add(player)
-ghost_group.add(blinky)
-ghost_group.add(pinky)
-ghost_group.add(inky)
-ghost_group.add(clyde)
-
-print(blinky.chasse(player), "\n")
-print(pinky.chasse(player), "\n")
-print(inky.chasse(player), "\n")
-print(clyde.chasse(player), "\n")
+player_group, ghost_group = reset()
 
     # ==== main loop ==== #
 
 run = True
 while run:
     labyrinth.draw_level()
+    for player in player_group:
+        player.eat(ghost_group)
     keys = pygame.event.get()
     for event in keys:
         if event.type == pygame.QUIT:
@@ -41,7 +48,7 @@ while run:
 
     player_group.update(keys)
     player_group.draw(screen)
-    ghost_group.update()
+    ghost_group.update(player_group.sprites()[0])
     ghost_group.draw(screen)
     
     #blinky.chasse(player)

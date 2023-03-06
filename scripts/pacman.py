@@ -2,6 +2,7 @@ from scripts.initialisation import *
 from scripts.labyrinth import Labyrinth
 from scripts.character import Character
 
+from time import monotonic
 
 class Pac_man(Character):
     keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
@@ -10,6 +11,10 @@ class Pac_man(Character):
 
         super().__init__(x, y, speed, direction, labyrinth)
         self.input_direction = None
+        self.score = 0
+        self.is_seeker = False
+        self.seek_time = 0
+
 
     def load_sprites(self):
         for nbr_img in range(1, NUMBER_IMG_PACMAN+1):
@@ -41,7 +46,7 @@ class Pac_man(Character):
             self.input_direction = None
 
     def update(self, keys):
-        """call all the required fonction for the update of the caracter each frame 
+        """call all the required functions for the update of the caracter each frame 
 
         Args:
             keys (tuple[Pygame Event]): the event enter this frame
@@ -49,8 +54,43 @@ class Pac_man(Character):
         self.get_input_direction(keys)
         self.set_direction()
         have_move = self.move()
+        if self.seek_time < monotonic():
+            self.is_seeker = False
         if have_move:
             self.animate()
+        screen.fill("#FF0000",pygame.Rect(self.pos_x, self.pos_y, TILE_SIZE, TILE_SIZE))
+
+    def eat(self, ghost_group):
+        """Try to eat everything on his way !"""
+        self.eat_pac_gomme()
+        self.eat_ghost(ghost_group)
+    
+    def eat_pac_gomme(self):
+        x, y = self.get_actual_cell()
+        case = self.labyrinth.map[y][x]
+        if case == 1:
+            self.score += 10
+            self.labyrinth.change_tile(x, y, 0)
+        elif case == 2:
+            self.score += 50
+            self.labyrinth.change_tile(x, y, 0)
+            self.seek_time = monotonic() + 10
+            self.is_seeker = True
+        
+    def eat_ghost(self, ghost_group):
+        start_self_x, start_self_y = self.pos_x, self.pos_y
+        end_self_x, end_self_y = start_self_x + TILE_SIZE, start_self_y + TILE_SIZE
+        for ghost in ghost_group:
+            start_ghost_x, start_ghost_y = ghost.pos_x, ghost.pos_y
+            end_ghost_x, end_ghost_y = start_ghost_x+TILE_SIZE, start_ghost_y+TILE_SIZE
+            if ((start_ghost_x <= start_self_x <= end_ghost_x and start_ghost_y <= start_self_y <= end_ghost_y)
+            or (start_self_x <= start_ghost_x <= end_self_x and start_self_y <= start_ghost_y <= end_self_y)):
+                if not self.is_seeker:
+                    import sys
+                    print("T'es trop con, t'es mort !")
+                    sys.exit()
+                ghost_group.remove(ghost)
+
 
     def animate(self):
         """draw the caracter on the screen"""
