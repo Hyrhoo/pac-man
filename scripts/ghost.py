@@ -26,6 +26,9 @@ class Ghost(Character):
         if self.current_sprite >= NUMBER_IMG_GHOSTS:
             self.current_sprite -= NUMBER_IMG_GHOSTS
         self.image = self.sprites[int(self.current_sprite + self.current_sens*NUMBER_IMG_GHOSTS)]
+    
+    def chasse(self, player:Character):
+        return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()))
 
 
 class Blinky(Ghost):

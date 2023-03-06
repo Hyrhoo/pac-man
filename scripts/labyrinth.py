@@ -38,7 +38,7 @@ class Labyrinth:
                 self.screen.blit(self.tiles[case], (x * TILE_SIZE, y * TILE_SIZE))
         pygame.draw.line(self.screen, (255, 255, 255), (WIDTH * TILE_SIZE, 0), (WIDTH * TILE_SIZE, HEIGHT * TILE_SIZE))
 
-    def is_colliding(self, x, y):
+    def is_colliding(self, x, y, ghost=False):
         """return if the cell coresponding to the given position is a wall or not
 
         Args:
@@ -48,7 +48,10 @@ class Labyrinth:
         Returns:
             bool: True if the cell is a wall, False otherways
         """
-        return self.map[y][x] in self.COLLISION
+        if self.map[y][x] in self.COLLISION:
+            if ghost and self.map[y][x] == 18:
+                return False
+            return True
 
     def get_nbr_gommes(self, count_type=(1, 2)):
         res = 0
@@ -61,10 +64,10 @@ class Labyrinth:
         for new_x, new_y in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             node_position = (x + new_x, y + new_y)
 
-            if node_position[0] > (WIDTH - 1) or node_position[0] < 0 or node_position[1] > (HEIGHT -1) or node_position[1] < 0: continue
-            if self.is_colliding(*node_position): continue
+            if 0 <= node_position[0] < WIDTH and 0 <= node_position[1] < HEIGHT and self.is_colliding(*node_position, True): continue
 
             around.append(node_position)
+        #around = filter(lambda x: (0 <= x[0] < WIDTH and 0 <= x[1] < HEIGHT) and not self.is_colliding(*x, True), around)
         return around
     
     def astar(self, start, end):

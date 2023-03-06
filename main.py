@@ -21,7 +21,10 @@ ghost_group.add(pinky)
 ghost_group.add(inky)
 ghost_group.add(clyde)
 
-print(labyrinth.astar(blinky.pos_in_laby(*blinky.get_center_pos()), player.pos_in_laby(*player.get_center_pos())))
+print(blinky.chasse(player), "\n")
+print(pinky.chasse(player), "\n")
+print(inky.chasse(player), "\n")
+print(clyde.chasse(player), "\n")
 
     # ==== main loop ==== #
 
@@ -41,9 +44,13 @@ while run:
     ghost_group.update()
     ghost_group.draw(screen)
     
+    #blinky.chasse(player)
+    #pinky.chasse(player)
+    #inky.chasse(player)
+    #clyde.chasse(player)
+
     pygame.display.flip()
     #print(clock.get_fps())  # juste pour afficher les fps
     clock.tick(GLOBAL_FPS)
-    #print(labyrinth.astar(blinky.pos_in_laby(*blinky.get_center_pos()), player.pos_in_laby(*player.get_center_pos())))
 
 pygame.quit()
