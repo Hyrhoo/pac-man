@@ -84,7 +84,8 @@ class Ghost(Character):
             direction = self.direction_to_take(*tile)
             self.change_direction(direction)
         have_move = self.move()
-        screen.fill("#FF0000",pygame.Rect(self.pos_x, self.pos_y, TILE_SIZE, TILE_SIZE))
+        # check the hitboxes
+        #screen.fill("#FF0000",pygame.Rect(self.pos_x, self.pos_y, TILE_SIZE, TILE_SIZE))
     
     def seek(self, player:Character):
         return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()))

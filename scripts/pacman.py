@@ -58,7 +58,8 @@ class Pac_man(Character):
             self.is_seeker = False
         if have_move:
             self.animate()
-        screen.fill("#FF0000",pygame.Rect(self.pos_x, self.pos_y, TILE_SIZE, TILE_SIZE))
+        # check the hitboxes
+        #screen.fill("#FF0000",pygame.Rect(self.pos_x, self.pos_y, TILE_SIZE, TILE_SIZE))
 
     def eat(self, ghost_group):
         """Try to eat everything on his way !"""
