@@ -12,3 +12,20 @@ les commandes:
 - `bas` pour descendre
 - `gauche` pour allez à gauche
 - `droite` pour allez à droite
+
+## [scoring system](https://pacman.fandom.com/wiki/Point_Configurations):
+
+- Pac-Dot = 10 Pts
+- Power Pellet = 50 Pts
+- 1st Ghost = 200 Pts
+- 2nd Ghost = 400 Pts
+- 3rd Ghost = 800 Pts
+- 4th Ghost = 1600 Pts
+- Cherry = 100 Pts
+- Strawberry = 300 Pts
+- Orange = 500 Pts
+- Apple = 700 Pts
+- Melon = 1000 Pts
+- Galaxian = 2000 Pts
+- Bell = 3000 Pts
+- Key = 5000 Pts
