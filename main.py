@@ -44,13 +44,13 @@ while run:
     ghost_group.update()
     ghost_group.draw(screen)
     
-    #blinky.chasse(player)
-    #pinky.chasse(player)
-    #inky.chasse(player)
-    #clyde.chasse(player)
+    blinky.chasse(player)
+    pinky.chasse(player)
+    inky.chasse(player)
+    clyde.chasse(player)
 
     pygame.display.flip()
-    #print(clock.get_fps())  # juste pour afficher les fps
+    print(clock.get_fps())  # juste pour afficher les fps
     clock.tick(GLOBAL_FPS)
 
 pygame.quit()

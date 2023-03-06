@@ -63,11 +63,8 @@ class Labyrinth:
         around = []
         for new_x, new_y in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             node_position = (x + new_x, y + new_y)
-
-            if 0 <= node_position[0] < WIDTH and 0 <= node_position[1] < HEIGHT and self.is_colliding(*node_position, True): continue
-
             around.append(node_position)
-        #around = filter(lambda x: (0 <= x[0] < WIDTH and 0 <= x[1] < HEIGHT) and not self.is_colliding(*x, True), around)
+        around = filter(lambda x: (0 <= x[0] < WIDTH and 0 <= x[1] < HEIGHT) and not self.is_colliding(*x, True), around)
         return around
     
     def astar(self, start, end):
