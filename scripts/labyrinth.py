@@ -5,8 +5,6 @@ class Labyrinth:
 
     def __init__(self, map_file, screen):
         """initialise les données de la classe en chargeant d'abord les images puis les datas de la map
-
-
         Args:
             map_file (str): le nom du fichier à charger
         """
@@ -22,7 +20,6 @@ class Labyrinth:
 
     def load_map(self, file):
         """charge le fichier contenant les datas de la map
-
         Args:
             file (str): le nom du fichier à charger
         """
@@ -40,11 +37,9 @@ class Labyrinth:
 
     def is_colliding(self, x, y, ghost=False):
         """return if the cell coresponding to the given position is a wall or not
-
         Args:
             x (int): x position in the labyrinth
             y (int): y position in the labyrinth
-
         Returns:
             bool: True if the cell is a wall, False otherways
         """
@@ -59,16 +54,17 @@ class Labyrinth:
             res += sum([1 for j in i if j in count_type])
         return res
     
-    def get_possible_cells(self, x, y):
+    def get_possible_cells(self, x, y, aditiv_wall=[]):
         around = []
         for new_x, new_y in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             node_position = (x + new_x, y + new_y)
             around.append(node_position)
-        around = map(lambda x: (WIDTH - 1, x[1]) if x[0] < 0 else (0, x[1]) if x[0] >= WIDTH else (x[0], x[1]), around)
-        around = filter(lambda x: (0 <= x[1] < HEIGHT) and not self.is_colliding(*x, True), around)
+        around = map(lambda x: self.normalize_pos(*x), around)
+        around = tuple(around)
+        around = filter(lambda x: not self.is_colliding(*x, True) and x not in aditiv_wall, around)
         return tuple(around)
     
-    def astar(self, start, end):
+    def astar(self, start, end, aditiv_wall=[]):
         if start == end:
             return [start, start]
         start_node = Node(None, start)
@@ -101,7 +97,8 @@ class Labyrinth:
                 return path[::-1]
             
             # génération des noeux des cases adjacentes
-            children = [Node(current_node, i) for i in self.get_possible_cells(*current_node.position)]
+            children = [Node(current_node, i) for i in self.get_possible_cells(*current_node.position, aditiv_wall)]
+            aditiv_wall = []
             
             # récupération des bons noeux
             for child in children:
@@ -119,6 +116,23 @@ class Labyrinth:
     
     def change_tile(self, x, y, tile):
         self.map[y][x] = tile
+    
+    def is_intersect(self, x, y):
+        tab = [False, False]
+        if not self.is_colliding(*self.normalize_pos(x+1, y)) or not self.is_colliding(*self.normalize_pos(x-1, y)):
+            tab[0] = True
+        if not self.is_colliding(*self.normalize_pos(x, y+1)) or not self.is_colliding(*self.normalize_pos(x, y-1)):
+            tab[1] = True
+        return all(tab)
+    
+    @staticmethod
+    def normalize_pos(x, y):
+        if x >= WIDTH:
+            x = 0
+        if x < 0:
+            x = WIDTH-1
+            #print(x, y)
+        return (x, y)
 
 
 class Node():

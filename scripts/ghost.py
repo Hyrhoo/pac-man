@@ -1,6 +1,7 @@
 from scripts.initialisation import *
 from scripts.labyrinth import Labyrinth
 from scripts.character import Character
+import random
 
 class Ghost(Character):
     direction_to_sens = {(-1,0): 0, (1,0): 1, (0,-1): 2, (0,1): 3}
@@ -9,6 +10,7 @@ class Ghost(Character):
 
         super().__init__(x, y, speed, direction, labyrinth)
         self.current_sens = self.direction_to_sens[self.direction]
+        self.current_cell = None
         for image in self.sprites:
             pygame.PixelArray(image).replace((237, 28, 36, 255), color)
 
@@ -28,21 +30,21 @@ class Ghost(Character):
         self.reset_direction(pos)
     
     def get_possible_cells(self):
-        pos = self.get_actual_cell()
-        cells = self.labyrinth.get_possible_cells(*pos)
-        print(cells)
         def fonc(x):
             if x[0] == pos[0] + self.direction[0] and x[1] == pos[1] + self.direction[1]:
                 return True
-            if self.direction[1] and x[0] != pos[0]:
+            if self.direction[1] and x[0] == pos[0]:
                 return False
-            if self.direction[0] and x[1] != pos[1]:
+            if self.direction[0] and x[1] == pos[1]:
                 return False
             return True
         
+        pos = self.get_actual_cell()
+        cells = self.labyrinth.get_possible_cells(*pos)
+
         return tuple(filter(fonc, cells))
     
-    def directuion_to_take(self, x, y):
+    def direction_to_take(self, x, y):
         g_x, g_y = self.get_actual_cell()
         if g_x < x:
             return (1, 0)
@@ -54,15 +56,10 @@ class Ghost(Character):
             return (0, -1)
         return self.direction
 
-    def next_tile_to_take(self, possible_move, path):
-        next_move = possible_move[0]
-        for v in possible_move:
-            if v in path:
-                if next_move not in path:
-                    next_move = v
-                else:
-                    if path.index(v) < path.index(next_move):
-                        next_move = v
+    def next_tile_to_take(self, possible_move, best_move):
+        next_move = random.choice(possible_move)
+        if best_move in possible_move:
+            next_move = best_move
         return next_move
 
     def animation(self):
@@ -73,20 +70,19 @@ class Ghost(Character):
     
     def update(self, player) -> None:
         self.animation()
-        possible_move = self.get_possible_cells()
-        print(possible_move, self.get_actual_cell(), self.direction)
-        if len(possible_move) > 1:   # can change direction
-            path = self.chasse(player)
-            tile = self.next_tile_to_take(possible_move, path)
-            direction = self.directuion_to_take(*tile)
-            self.change_direction(direction)
-        elif possible_move[0] != (self.pos_x + self.direction[0], self.pos_y + self.direction[1]):
-            direction = self.directuion_to_take(*possible_move[0])
+        actual_cell = self.get_actual_cell()
+        if self.current_cell != actual_cell and self.labyrinth.is_intersect(*actual_cell):
+            self.current_cell = actual_cell
+            possible_move = self.get_possible_cells()
+            best_move = self.seek(player)[1]
+            tile = self.next_tile_to_take(possible_move, best_move)
+            direction = self.direction_to_take(*tile)
             self.change_direction(direction)
         have_move = self.move(True)
     
-    def chasse(self, player:Character):
-        return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()))
+    def seek(self, player:Character):
+        pos = self.get_actual_cell()
+        return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()), [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])])
 
 
 class Blinky(Ghost):

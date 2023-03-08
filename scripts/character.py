@@ -18,8 +18,6 @@ class Character(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.pos_x, self.pos_y)
     
-    def load_sprites(self):
-        pass
 
     def set_pos(self, x, y):
         """set the caracter at the given position
@@ -75,7 +73,7 @@ class Character(pygame.sprite.Sprite):
         return self.pos_in_laby(*self.get_center_pos())
 
     def tp(self):
-        """telepost the caracter to the opposite side if he is out of the labyrinth"""
+        """teleport the caracter to the opposite side if he is out of the labyrinth"""
         if self.pos_x <= 0:
             self.set_pos(TILE_SIZE*(WIDTH - 1), self.pos_y)
             return
@@ -114,3 +112,6 @@ class Character(pygame.sprite.Sprite):
             self.set_pos(self.pos_x, TILE_SIZE * pos_in_laby[1])
         if self.direction[1]:
             self.set_pos(TILE_SIZE * pos_in_laby[0], self.pos_y)
+
+    def get_actual_cell(self):
+        return self.pos_in_laby(*self.get_center_pos())
