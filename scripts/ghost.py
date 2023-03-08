@@ -95,24 +95,24 @@ class Ghost(Character):
 
 class Blinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, 0, (255, 0, 0))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=0) -> None:
+        super().__init__(x, y, labyrinth, speed, direction, time_in_spawn, (255, 0, 0))
 
 
 class Pinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, 3333, (255, 184, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=3333) -> None:
+        super().__init__(x, y, labyrinth, speed, direction, time_in_spawn, (255, 184, 255))
 
 
 class Inky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, 6666, (0, 255, 255))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=6666) -> None:
+        super().__init__(x, y, labyrinth, speed, direction, time_in_spawn, (0, 255, 255))
 
 
    
 class Clyde(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, 9999, (255, 184, 81))
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=9999) -> None:
+        super().__init__(x, y, labyrinth, speed, direction, time_in_spawn, (255, 184, 81))
