@@ -79,7 +79,6 @@ class Ghost(Character):
     
     def update(self, player) -> None:
         self.animation()
-        print(self.speed)
         # gestion déplacement
         actual_cell = self.get_actual_cell()
         if self.current_cell != actual_cell and self.labyrinth.is_intersect(*actual_cell):
