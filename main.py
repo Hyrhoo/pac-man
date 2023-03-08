@@ -11,10 +11,10 @@ def reset():
     player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 
 
-    blinky = Blinky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, labyrinth)
-    pinky = Pinky(TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(1, 0))
-    inky = Inky(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(0, -1))
-    clyde = Clyde(TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(0, 1))
+    blinky = Blinky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11)
+    pinky = Pinky(labyrinth, TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, direction=(1, 0))
+    inky = Inky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, direction=(0, -1))
+    clyde = Clyde(labyrinth, TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, direction=(0, 1))
 
     player_group.add(player)
     ghost_group.add(blinky)

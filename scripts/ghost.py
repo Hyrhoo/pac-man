@@ -7,9 +7,9 @@ class Ghost(Character):
     direction_to_sens = {(-1,0): 0, (1,0): 1, (0,-1): 2, (0,1): 3}
     spawn = ((11,13),(12,14),(13,13),(14,13),(15,13),(16,13),
              (11,14),(12,13),(13,14),(14,14),(15,14),(16,14),
-             (11,15),(12,14),(13,15),(14,15),(15,15),(16,15))
+             (11,15),(12,15),(13,15),(14,15),(15,15),(16,15))
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=0, color=(255, 0, 0)) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=10, direction=(-1,0), time_in_spawn=0, color=(255, 0, 0)) -> None:
         super().__init__(x, y, speed, direction, labyrinth)
         self.current_sens = self.direction_to_sens[self.direction]
         self.current_cell = None
@@ -17,11 +17,16 @@ class Ghost(Character):
         self.can_go_out = False
         self.creat_time = pygame.time.get_ticks()
         self.time_in_spawn = time_in_spawn
+        self.is_weaken = False
+        self.time_weaken = 0
         for image in self.sprites:
             pygame.PixelArray(image).replace((237, 28, 36, 255), color)
 
+    def __repr__(self):
+        return f"{type(self)} - {(self.pos_x, self.pos_y)} - {self.get_actual_cell()}, {self.labyrinth.map[self.get_actual_cell()[1]][self.get_actual_cell()[0]]} - {self.in_spawn}, {self.can_go_out}, {self.creat_time}, {self.time_in_spawn}"
+
     def load_sprites(self):
-        for direction in ("left", "right", "up", "down"):
+        for direction in ("left", "right", "up", "down", "weaken"):
             for nbr_img in range(1, NUMBER_IMG_GHOSTS+1):
                 self.load_sprite(f"ghost/{direction}/{nbr_img}")
     
@@ -65,6 +70,8 @@ class Ghost(Character):
         return next_move
 
     def animation(self):
+        if self.is_weaken:
+            self.current_sens = 4
         self.current_sprite += 1
         if self.current_sprite >= NUMBER_IMG_GHOSTS:
             self.current_sprite -= NUMBER_IMG_GHOSTS
@@ -72,6 +79,8 @@ class Ghost(Character):
     
     def update(self, player) -> None:
         self.animation()
+
+        # gestion déplacement
         actual_cell = self.get_actual_cell()
         if self.current_cell != actual_cell and self.labyrinth.is_intersect(*actual_cell):
             self.current_cell = actual_cell
@@ -81,38 +90,49 @@ class Ghost(Character):
             direction = self.direction_to_take(*tile)
             self.change_direction(direction)
         self.move(self.in_spawn)
+        
+        # spawn gestion
         if self.in_spawn:
             if self.creat_time + self.time_in_spawn <= pygame.time.get_ticks():
                 self.can_go_out = True
             if self.get_actual_cell() not in self.spawn:
                 self.in_spawn = False
                 self.can_go_out = False
+            
+        if self.is_weaken:
+            if pygame.time.get_ticks() >= self.time_weaken:
+                self.is_weaken = False
+                self.current_sens = self.direction_to_sens[self.direction]
     
     def seek(self, player:Character):
         pos = self.get_actual_cell()
         return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()), [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])], self.in_spawn)
+    
+    def weaken(self, time):
+        self.is_weaken = True
+        self.time_weaken = pygame.time.get_ticks() + time
 
 
 class Blinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=0) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, time_in_spawn, (255, 0, 0))
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=10, direction=(-1,0), time_in_spawn=0) -> None:
+        super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 0, 0))
 
 
 class Pinky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=3333) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, time_in_spawn, (255, 184, 255))
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=10, direction=(-1,0), time_in_spawn=3333) -> None:
+        super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 255))
 
 
 class Inky(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=6666) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, time_in_spawn, (0, 255, 255))
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=10, direction=(-1,0), time_in_spawn=6666) -> None:
+        super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (0, 255, 255))
 
 
    
 class Clyde(Ghost):
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=9999) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, time_in_spawn, (255, 184, 81))
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=10, direction=(-1,0), time_in_spawn=9999) -> None:
+        super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 81))

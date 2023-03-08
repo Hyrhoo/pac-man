@@ -114,7 +114,7 @@ class Labyrinth:
                 else:
                     open_list.append(child)
         
-        raise ValueError("start has no path to end")
+        raise ValueError(f"start point '{start}' has no path to end point '{end}'")
     
     def change_tile(self, x, y, tile):
         self.map[y][x] = tile

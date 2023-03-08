@@ -63,10 +63,10 @@ class Pac_man(Character):
 
     def eat(self, ghost_group):
         """Try to eat everything on his way !"""
-        self.eat_pac_gomme()
+        self.eat_pac_gomme(ghost_group)
         self.eat_ghost(ghost_group)
     
-    def eat_pac_gomme(self):
+    def eat_pac_gomme(self, ghost_group):
         x, y = self.get_actual_cell()
         case = self.labyrinth.map[y][x]
         if case == 1:
@@ -75,6 +75,8 @@ class Pac_man(Character):
         elif case == 2:
             self.score += 50
             self.labyrinth.change_tile(x, y, 0)
+            for ghost in ghost_group:
+                ghost.weaken(10_000)
             self.seek_time = monotonic() + 10
             self.is_seeker = True
         
@@ -86,11 +88,14 @@ class Pac_man(Character):
             end_ghost_x, end_ghost_y = start_ghost_x+TILE_SIZE, start_ghost_y+TILE_SIZE
             if ((start_ghost_x <= start_self_x <= end_ghost_x and start_ghost_y <= start_self_y <= end_ghost_y)
             or (start_self_x <= start_ghost_x <= end_self_x and start_self_y <= start_ghost_y <= end_self_y)):
-                #if not self.is_seeker:
-                #    import sys
-                #    print("T'es trop con, t'es mort !")
-                #    sys.exit()
-                #ghost_group.remove(ghost)
+                if ghost.is_weaken:
+                    ghost_group.remove(ghost)
+                    new_ghost = type(ghost)(self.labyrinth, time_in_spawn=5000)
+                    ghost_group.add(new_ghost)
+                else:
+                    import sys
+                    print("T'es trop con, t'es mort !")
+                    sys.exit()
                 pass
 
 
