@@ -79,7 +79,7 @@ class Ghost(Character):
     
     def update(self, player) -> None:
         self.animation()
-
+        print(self.speed)
         # gestion déplacement
         actual_cell = self.get_actual_cell()
         if self.current_cell != actual_cell and self.labyrinth.is_intersect(*actual_cell):
@@ -115,24 +115,24 @@ class Ghost(Character):
 
 class Blinky(Ghost):
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=10, direction=(-1,0), time_in_spawn=0) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=0) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 0, 0))
 
 
 class Pinky(Ghost):
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=10, direction=(-1,0), time_in_spawn=3333) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=3333) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 255))
 
 
 class Inky(Ghost):
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=10, direction=(-1,0), time_in_spawn=6666) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=6666) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (0, 255, 255))
 
 
    
 class Clyde(Ghost):
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=10, direction=(-1,0), time_in_spawn=9999) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=9999) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 81))

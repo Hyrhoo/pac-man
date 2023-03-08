@@ -55,7 +55,7 @@ class Pac_man(Character):
         self.get_input_direction(keys)
         temporary_speed = self.speed
         if self.slow:
-            self.speed = 0.8*self.speed
+            self.speed = 0.6*self.speed
         print(self.speed)
         self.set_direction()
         have_move = self.move()
@@ -111,14 +111,6 @@ class Pac_man(Character):
                     print("T'es trop con, t'es mort !")
                     sys.exit()
 
-    # def eat_ghost(self, ghost_group):
-    #     for ghost in ghost_group:
-    #         if pygame.mask.from_surface(self.image).overlap(pygame.mask.from_surface(ghost.image),(ghost.pos_x-self.pos_x,ghost.pos_y-self.pos_y)):
-    #             if not self.is_seeker:
-    #                 import sys
-    #                 print("T'es trop con, t'es mort !")
-    #                 sys.exit()
-    #             ghost_group.remove(ghost)
 
     def animate(self):
         """draw the caracter on the screen"""
