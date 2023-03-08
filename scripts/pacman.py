@@ -15,6 +15,7 @@ class Pac_man(Character):
         self.is_seeker = False
         self.seek_time = 0
         self.slow = False
+        self.nb_eat = 0
 
 
     def load_sprites(self):
@@ -55,8 +56,7 @@ class Pac_man(Character):
         self.get_input_direction(keys)
         temporary_speed = self.speed
         if self.slow:
-            self.speed = 0.8*self.speed
-        print(self.speed)
+            self.speed = 0.6*self.speed
         self.set_direction()
         have_move = self.move()
         if self.seek_time < monotonic():
@@ -86,6 +86,7 @@ class Pac_man(Character):
             self.labyrinth.change_tile(x, y, 0)
             for ghost in ghost_group:
                 ghost.weaken(10_000)
+            self.nb_eat = 0
             self.seek_time = monotonic() + 10
             self.is_seeker = True
             self.slow = True
@@ -106,19 +107,16 @@ class Pac_man(Character):
                     ghost_group.remove(ghost)
                     new_ghost = type(ghost)(self.labyrinth, time_in_spawn=5000)
                     ghost_group.add(new_ghost)
+                    if self.nb_eat == 0:
+                        self.nb_eat = 2
+                    else:
+                        self.nb_eat *= 2
+                    self.score += 200 * self.nb_eat
                 else:
                     import sys
                     print("T'es trop con, t'es mort !")
                     sys.exit()
 
-    # def eat_ghost(self, ghost_group):
-    #     for ghost in ghost_group:
-    #         if pygame.mask.from_surface(self.image).overlap(pygame.mask.from_surface(ghost.image),(ghost.pos_x-self.pos_x,ghost.pos_y-self.pos_y)):
-    #             if not self.is_seeker:
-    #                 import sys
-    #                 print("T'es trop con, t'es mort !")
-    #                 sys.exit()
-    #             ghost_group.remove(ghost)
 
     def animate(self):
         """draw the caracter on the screen"""
