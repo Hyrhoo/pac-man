@@ -14,6 +14,7 @@ class Pac_man(Character):
         self.score = 0
         self.is_seeker = False
         self.seek_time = 0
+        self.slow = False
 
 
     def load_sprites(self):
@@ -52,12 +53,19 @@ class Pac_man(Character):
             keys (tuple[Pygame Event]): the event enter this frame
         """
         self.get_input_direction(keys)
+        temporary_speed = self.speed
+        if self.slow:
+            self.speed = 0.8*self.speed
+        print(self.speed)
         self.set_direction()
         have_move = self.move()
         if self.seek_time < monotonic():
             self.is_seeker = False
         if have_move:
             self.animate()
+        if self.slow:
+            self.speed = temporary_speed
+            self.slow = False
         # check the hitboxes
         #screen.fill("#FF0000",pygame.Rect(self.pos_x, self.pos_y, TILE_SIZE, TILE_SIZE))
 
@@ -72,6 +80,7 @@ class Pac_man(Character):
         if case == 1:
             self.score += 10
             self.labyrinth.change_tile(x, y, 0)
+            self.slow = True
         elif case == 2:
             self.score += 50
             self.labyrinth.change_tile(x, y, 0)
@@ -79,15 +88,20 @@ class Pac_man(Character):
                 ghost.weaken(10_000)
             self.seek_time = monotonic() + 10
             self.is_seeker = True
-        
+            self.slow = True
+
+
     def eat_ghost(self, ghost_group):
-        start_self_x, start_self_y = self.pos_x, self.pos_y
-        end_self_x, end_self_y = start_self_x + TILE_SIZE, start_self_y + TILE_SIZE
+        x, y, width, height = pygame.mask.from_surface(self.image).get_bounding_rects()[0]
+        x += self.pos_x
+        y += self.pos_y
+
         for ghost in ghost_group:
-            start_ghost_x, start_ghost_y = ghost.pos_x, ghost.pos_y
-            end_ghost_x, end_ghost_y = start_ghost_x+TILE_SIZE, start_ghost_y+TILE_SIZE
-            if ((start_ghost_x <= start_self_x <= end_ghost_x and start_ghost_y <= start_self_y <= end_ghost_y)
-            or (start_self_x <= start_ghost_x <= end_self_x and start_self_y <= start_ghost_y <= end_self_y)):
+            x_ghost, y_ghost, width_ghost, height_ghost = pygame.mask.from_surface(ghost.image).get_bounding_rects()[0]
+            x_ghost += ghost.pos_x
+            y_ghost += ghost.pos_y
+            
+            if (x+0.2*width<x_ghost+width_ghost<x+width or x<x_ghost<x+width-0.2*width) and (y<y_ghost+height_ghost<y+height or y<y_ghost<y+height-0.2*height):
                 if ghost.is_weaken:
                     ghost_group.remove(ghost)
                     new_ghost = type(ghost)(self.labyrinth, time_in_spawn=5000)
@@ -96,8 +110,15 @@ class Pac_man(Character):
                     import sys
                     print("T'es trop con, t'es mort !")
                     sys.exit()
-                pass
 
+    # def eat_ghost(self, ghost_group):
+    #     for ghost in ghost_group:
+    #         if pygame.mask.from_surface(self.image).overlap(pygame.mask.from_surface(ghost.image),(ghost.pos_x-self.pos_x,ghost.pos_y-self.pos_y)):
+    #             if not self.is_seeker:
+    #                 import sys
+    #                 print("T'es trop con, t'es mort !")
+    #                 sys.exit()
+    #             ghost_group.remove(ghost)
 
     def animate(self):
         """draw the caracter on the screen"""
