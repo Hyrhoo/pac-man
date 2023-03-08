@@ -142,7 +142,7 @@ class Ghost(Character):
                 self.is_weaken = False
                 self.current_sens = self.direction_to_sens[self.direction]
 
-    def seek(self, player:Character):
+    def seek(self, destination):
         """chasse le joueur
 
         Args:
@@ -152,7 +152,7 @@ class Ghost(Character):
             list[tuple[int]]: le chemain le plus court au joueur
         """
         pos = self.get_actual_cell()
-        return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()), [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])], self.in_spawn)
+        return self.labyrinth.astar(pos, destination, [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])], self.in_spawn)
 
     def weaken(self, time):
         """rand le fantôme faible au joueur pour un temps donner
@@ -168,6 +168,10 @@ class Blinky(Ghost):
 
     def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=0) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 0, 0))
+    
+    def seek(self, player:Character):
+        destination = player.get_actual_cell()
+        return super().seek(destination)
 
 
 class Pinky(Ghost):
@@ -175,11 +179,19 @@ class Pinky(Ghost):
     def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=3333) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 255))
 
+    def seek(self, player:Character):
+        destination = player.get_actual_cell()
+        return super().seek(destination)
+
 
 class Inky(Ghost):
 
     def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=6666) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (0, 255, 255))
+    
+    def seek(self, player:Character):
+        destination = player.get_actual_cell()
+        return super().seek(destination)
 
 
    
@@ -187,3 +199,7 @@ class Clyde(Ghost):
 
     def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=9999) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 81))
+    
+    def seek(self, player:Character):
+        destination = player.get_actual_cell()
+        return super().seek(destination)
