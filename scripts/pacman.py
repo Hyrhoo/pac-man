@@ -103,7 +103,7 @@ class Pac_man(Character):
                     new_ghost = type(ghost)(self.labyrinth, time_in_spawn=random.randint(5000, 8000))
                     ghost_group.add(new_ghost)
                     self.score += self.score_eat
-                    self.nb_eat *= 2
+                    self.score_eat *= 2
                 else:
                     import sys
                     print("T'es trop con, t'es mort !")
