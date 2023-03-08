@@ -18,7 +18,6 @@ class Character(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.pos_x, self.pos_y)
     
-
     def set_pos(self, x, y):
         """set the caracter at the given position
 
@@ -86,7 +85,6 @@ class Character(pygame.sprite.Sprite):
         front_pos = self.get_front_pos(*new_pos, self.direction)
         pos_in_laby = self.pos_in_laby(*front_pos)
         return not self.labyrinth.is_colliding(*pos_in_laby, in_spawn)
-
 
     def move(self, in_spawn=False):
         """move the caracter from his direction and his speed"""

@@ -81,6 +81,7 @@ class Ghost(Character):
     def update(self, player) -> None:
         print(self)
         self.animation()
+
         # gestion déplacement
         actual_cell = self.get_actual_cell()
         if self.current_cell != actual_cell and self.labyrinth.is_intersect(*actual_cell):
@@ -91,7 +92,7 @@ class Ghost(Character):
             direction = self.direction_to_take(*tile)
             self.change_direction(direction)
         self.move(self.in_spawn)
-        
+
         # spawn gestion
         if self.in_spawn:
             if self.creat_time + self.time_in_spawn <= pygame.time.get_ticks():
@@ -100,16 +101,16 @@ class Ghost(Character):
                 self.in_spawn = False
                 self.can_go_out = False
                 self.direction = (-1, 0)
-            
+   
         if self.is_weaken:
             if pygame.time.get_ticks() >= self.time_weaken:
                 self.is_weaken = False
                 self.current_sens = self.direction_to_sens[self.direction]
-    
+
     def seek(self, player:Character):
         pos = self.get_actual_cell()
         return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()), [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])], self.in_spawn)
-    
+
     def weaken(self, time):
         self.is_weaken = True
         self.time_weaken = pygame.time.get_ticks() + time

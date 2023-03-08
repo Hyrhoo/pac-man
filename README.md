@@ -13,7 +13,6 @@ les commandes:
 - `gauche` pour aller à gauche
 - `droite` pour aller à droite
 
-
 ## [scoring system](https://pacman.fandom.com/wiki/Point_Configurations):
 
 
