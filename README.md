@@ -16,15 +16,10 @@ les commandes:
 - `gauche` pour aller à gauche
 - `droite` pour aller à droite
 
-<<<<<<< HEAD
 
 ## [scoring system](https://pacman.fandom.com/wiki/Point_Configurations):
 
 
-=======
-## [scoring system](https://pacman.fandom.com/wiki/Point_Configurations):
-
->>>>>>> af7da5ce3c4f83b64f9f7a060503c10c81800834
 - Pac-Dot = 10 Pts
 - Power Pellet = 50 Pts
 - 1st Ghost = 200 Pts
@@ -38,8 +33,4 @@ les commandes:
 - Melon = 1000 Pts
 - Galaxian = 2000 Pts
 - Bell = 3000 Pts
-<<<<<<< HEAD
 - Key = 5000 Pts
-=======
-- Key = 5000 Pts
->>>>>>> af7da5ce3c4f83b64f9f7a060503c10c81800834
