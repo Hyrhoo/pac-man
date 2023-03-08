@@ -24,20 +24,32 @@ class Ghost(Character):
             pygame.PixelArray(image).replace((237, 28, 36, 255), color)
 
     def __repr__(self):
+        """pratique pour les print
+
+        Returns:
+            str: les infos du fantôme
+        """
         return f"{type(self)} - {(self.pos_x, self.pos_y)}, {self.get_actual_cell()}, {self.labyrinth.map[self.get_actual_cell()[1]][self.get_actual_cell()[0]]} - {self.direction} - {self.in_spawn}, {self.can_go_out}, {self.creat_time}, {self.time_in_spawn}"
 
     def load_sprites(self):
+        """charge les différentes images nécessaires pour l'affichage du fantôme"""
         for direction in ("left", "right", "up", "down", "weaken"):
             for nbr_img in range(1, NUMBER_IMG_GHOSTS+1):
                 self.load_sprite(f"ghost/{direction}/{nbr_img}")
     
     def change_direction(self, new_direction):
+        """permet au fantôme de changer de dirrection
+
+        Args:
+            new_direction (tuple[int]): la nouvelle direction à prendre
+        """
         self.direction = new_direction
         self.current_sens = self.direction_to_sens[self.direction]
         pos = self.pos_in_laby(*self.get_front_pos(self.pos_x, self.pos_y, self.direction))
         self.reset_direction(pos)
     
     def get_possible_cells(self):
+        """renvois les cases où peut ce déplacer le fantôme"""
         def fonc(x):
             if x[0] == pos[0] + self.direction[0] and x[1] == pos[1] + self.direction[1]:
                 return True
@@ -53,6 +65,15 @@ class Ghost(Character):
         return tuple(filter(fonc, cells))
     
     def direction_to_take(self, x, y):
+        """savoir la direction à prendre pour ce diriger vers la case donner
+
+        Args:
+            x (int): position x de la case voulu
+            y (int): position y de la case voulu
+
+        Returns:
+            tuple[int]: la dirrection à prendre pour rejoindre la case
+        """
         g_x, g_y = self.get_actual_cell()
         if g_x < x:
             return (1, 0)
@@ -65,12 +86,21 @@ class Ghost(Character):
         return self.direction
 
     def next_tile_to_take(self, possible_move, best_move):
-        next_move = random.choice(possible_move)
+        """détermine la tuile où le fantôme doit ce déplacer
+
+        Args:
+            possible_move (tuple[tuple[int]]): tuple avec toutes les casses où le fantôme peut ce déplacer
+            best_move (tuple[int]): le meilleur endroit où le fantôme pourrais allez
+
+        Returns:
+            tuple[int]: la position que le fantôme vas devoire rejoindre
+        """
         if best_move in possible_move:
-            next_move = best_move
-        return next_move
+            return best_move
+        return random.choice(possible_move)
 
     def animation(self):
+        """anime le fantôme"""
         if self.is_weaken:
             self.current_sens = 4
         self.current_sprite += 1
@@ -79,7 +109,11 @@ class Ghost(Character):
         self.image = self.sprites[int(self.current_sprite + self.current_sens*NUMBER_IMG_GHOSTS)]
     
     def update(self, player) -> None:
-        print(self)
+        """fonction qui met à joure le fantôme d'une frame à l'autre
+
+        Args:
+            player (Pacman): le joueur à rechercher
+        """
         self.animation()
 
         # gestion déplacement
@@ -93,7 +127,7 @@ class Ghost(Character):
             self.change_direction(direction)
         self.move(self.in_spawn)
 
-        # spawn gestion
+        # gestion du spawn
         if self.in_spawn:
             if self.creat_time + self.time_in_spawn <= pygame.time.get_ticks():
                 self.can_go_out = True
@@ -102,16 +136,30 @@ class Ghost(Character):
                 self.can_go_out = False
                 self.direction = (-1, 0)
    
+        # gestion de la faiblesse au joueur
         if self.is_weaken:
             if pygame.time.get_ticks() >= self.time_weaken:
                 self.is_weaken = False
                 self.current_sens = self.direction_to_sens[self.direction]
 
     def seek(self, player:Character):
+        """chasse le joueur
+
+        Args:
+            player (Character): le joueur à chasser
+
+        Returns:
+            list[tuple[int]]: le chemain le plus court au joueur
+        """
         pos = self.get_actual_cell()
         return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()), [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])], self.in_spawn)
 
     def weaken(self, time):
+        """rand le fantôme faible au joueur pour un temps donner
+
+        Args:
+            time (int): temps de faiblaisse en miliseconde
+        """
         self.is_weaken = True
         self.time_weaken = pygame.time.get_ticks() + time
 

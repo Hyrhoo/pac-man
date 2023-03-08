@@ -5,6 +5,7 @@ class Labyrinth:
 
     def __init__(self, map_file, screen):
         """initialise les données de la classe en chargeant d'abord les images puis les datas de la map
+        
         Args:
             map_file (str): le nom du fichier à charger
         """
@@ -20,6 +21,7 @@ class Labyrinth:
 
     def load_map(self, file):
         """charge le fichier contenant les datas de la map
+        
         Args:
             file (str): le nom du fichier à charger
         """
@@ -49,12 +51,31 @@ class Labyrinth:
             return True
 
     def get_nbr_gommes(self, count_type=(1, 2)):
+        """compte le nombre de gommes restante dans le labyrinthe
+
+        Args:
+            count_type (tuple[int], optional): le tpyme des gommes à compter. Defaults to (1, 2).
+
+        Returns:
+            int: le nombre de gommes compté
+        """
         res = 0
         for i in self.map:
             res += sum([1 for j in i if j in count_type])
         return res
     
     def get_possible_cells(self, x, y, aditiv_wall=[], in_spawn=False):
+        """donne les casse valides autoures de la casse donner
+
+        Args:
+            x (int): la position x de la case dans le labyrinthe
+            y (int): la position y de la case dans le labyrinthe
+            aditiv_wall (list[tuple[int]], optional): potientielle mures à rajouter. Defaults to [].
+            in_spawn (bool, optional): est-ce que les mures du spawn sont compté. Defaults to False.
+
+        Returns:
+            tuple[tuple[int]]: positions valides
+        """
         around = []
         for new_x, new_y in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             node_position = (x + new_x, y + new_y)
@@ -65,6 +86,20 @@ class Labyrinth:
         return tuple(around)
     
     def astar(self, start, end, aditiv_wall=[], in_spawn=False):
+        """algorithme A*
+
+        Args:
+            start (tuple[int]): la position de la case de départ
+            end (tuple[int]): la position de la case d'arriver
+            aditiv_wall (list[tuple[int]], optional): mure à rajouté. ils serons effacer après le 1er déplacement calculer. Defaults to [].
+            in_spawn (bool, optional): le passage peut-il passer par le spawn ? Defaults to False.
+
+        Raises:
+            ValueError: si le chemain n'est pas trouver
+
+        Returns:
+            list[tuple[int]]: liste de position qui constitue le chemain à prendre
+        """
         if start == end:
             return [start, start]
         start_node = Node(None, start)
@@ -117,9 +152,25 @@ class Labyrinth:
         raise ValueError(f"start point '{start}' has no path to end point '{end}'")
     
     def change_tile(self, x, y, tile):
+        """change une luile du labyrinthe
+
+        Args:
+            x (int): position x de la tuile dans le labyrinthe
+            y (int): position y de la tuile dans le labyrinthe
+            tile (int): le numéro correspondant à la nouvelle tuile
+        """
         self.map[y][x] = tile
     
     def is_intersect(self, x, y):
+        """donne si la position donner est une intersection ou non
+
+        Args:
+            x (int): position x de la case dans le labyrinthe
+            y (int): position y de la case dans le labyronthe
+
+        Returns:
+            bool: True si la position est une intesection. sinon False
+        """
         tab = [False, False]
         if not self.is_colliding(*self.normalize_pos(x+1, y)) or not self.is_colliding(*self.normalize_pos(x-1, y)):
             tab[0] = True
@@ -129,11 +180,19 @@ class Labyrinth:
     
     @staticmethod
     def normalize_pos(x, y):
+        """normalise la positon donner pour qu'elle soit comprise dans le labyrinthe
+
+        Args:
+            x (int): position x à normaliser
+            y (int): position y à normaliser
+
+        Returns:
+            tuple[int]: la nouvelle positon normaliser
+        """
         if x >= WIDTH:
             x = 0
         if x < 0:
             x = WIDTH-1
-            #print(x, y)
         return (x, y)
 
 

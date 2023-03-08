@@ -22,8 +22,8 @@ class Character(pygame.sprite.Sprite):
         """set the caracter at the given position
 
         Args:
-            x (int): the x position of the caracter
-            y (int): the y position of the caracter
+            x (int): the x position of the caracter in pixel
+            y (int): the y position of the caracter in pixel
         """
         self.pos_x, self.pos_y = x, y
         self.rect.topleft = (x, y)
@@ -33,8 +33,8 @@ class Character(pygame.sprite.Sprite):
         """get the position of the pixel on the front of the caracter at the given position
 
         Args:
-            x (int): the x position of the caracter
-            y (int): the y position of the caracter
+            x (int): the x position of the caracter in pixel
+            y (int): the y position of the caracter in pixel
             direction (tuple[int]): the direction of the caracter
 
         Returns:
@@ -50,6 +50,11 @@ class Character(pygame.sprite.Sprite):
             return (x+(TILE_SIZE//2), y-1)
 
     def load_sprite(self, sprite):
+        """charge l'image donner 
+
+        Args:
+            sprite (str): le nom de l'image
+        """
         self.sprites.append(pygame.transform.scale(pygame.image.load(f"{DATA_DIRECTORY}/{sprite}.png").convert_alpha(), (TILE_SIZE, TILE_SIZE)))
 
     @staticmethod
@@ -66,9 +71,19 @@ class Character(pygame.sprite.Sprite):
         return (min(x // TILE_SIZE, WIDTH-1), min(y // TILE_SIZE, HEIGHT-1))
 
     def get_center_pos(self):
+        """donner la position du pixel au centre du personnage
+
+        Returns:
+            tuple[int]: la position du pixel au centre du perso
+        """
         return self.pos_x+(TILE_SIZE//2), self.pos_y+(TILE_SIZE//2)
 
     def get_actual_cell(self):
+        """renvoi la positoin où ce trouve le perso dans le labyrinthe en fonction de son pixel centrale
+
+        Returns:
+            tuple[int]: la position dans le labyrinthe
+        """
         return self.pos_in_laby(*self.get_center_pos())
 
     def tp(self):
@@ -97,6 +112,7 @@ class Character(pygame.sprite.Sprite):
         return True
 
     def correction_pos(self):
+        """corrige la position du personnage pour qu'il soit exactement sur une case du labyrinthe"""
         pos_in_laby = self.pos_in_laby(*self.get_center_pos())
         self.set_pos(pos_in_laby[0]*TILE_SIZE, pos_in_laby[1]*TILE_SIZE)
     
@@ -111,5 +127,3 @@ class Character(pygame.sprite.Sprite):
         if self.direction[1]:
             self.set_pos(TILE_SIZE * pos_in_laby[0], self.pos_y)
 
-    def get_actual_cell(self):
-        return self.pos_in_laby(*self.get_center_pos())
