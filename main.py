@@ -24,7 +24,7 @@ def reset():
 
     return player_group, ghost_group
 
-# ==== init ==== #
+    # ==== init ==== #
 
 
 labyrinth = Labyrinth(f"{DATA_DIRECTORY}/map.txt", screen)

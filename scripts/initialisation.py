@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 from scripts.constantes import *
 
 pygame.init()

@@ -3,7 +3,6 @@ from scripts.labyrinth import Labyrinth
 from scripts.character import Character
 
 from time import monotonic
-from random import randint
 
 class Pac_man(Character):
     keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
@@ -13,8 +12,6 @@ class Pac_man(Character):
         super().__init__(x, y, speed, direction, labyrinth)
         self.input_direction = None
         self.score = 0
-        self.is_seeker = False
-        self.seek_time = 0
         self.slow = False
         self.nb_eat = 0
 
@@ -60,8 +57,6 @@ class Pac_man(Character):
             self.speed = 0.6*self.speed
         self.set_direction()
         have_move = self.move()
-        if self.seek_time < monotonic():
-            self.is_seeker = False
         if have_move:
             self.animate()
         if self.slow:
@@ -89,8 +84,6 @@ class Pac_man(Character):
             for ghost in ghost_group:
                 ghost.weaken(10_000)
             self.nb_eat = 0
-            self.seek_time = monotonic() + 10
-            self.is_seeker = True
             self.slow = True
 
 
@@ -107,13 +100,10 @@ class Pac_man(Character):
             if (x+0.2*width<x_ghost+width_ghost<x+width or x<x_ghost<x+width-0.2*width) and (y<y_ghost+height_ghost<y+height or y<y_ghost<y+height-0.2*height):
                 if ghost.is_weaken:
                     ghost_group.remove(ghost)
-                    new_ghost = type(ghost)(self.labyrinth, time_in_spawn=randint(5000, 8000))
+                    new_ghost = type(ghost)(self.labyrinth, time_in_spawn=random.randint(5000, 8000))
                     ghost_group.add(new_ghost)
-                    if self.nb_eat == 0:
-                        self.nb_eat = 2
-                    else:
-                        self.nb_eat *= 2
-                    self.score += 200 * self.nb_eat
+                    self.score += 200 * 2 ** self.nb_eat
+                    self.nb_eat += 1
                 else:
                     import sys
                     print("T'es trop con, t'es mort !")
