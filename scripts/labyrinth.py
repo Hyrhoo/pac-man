@@ -35,7 +35,7 @@ class Labyrinth:
                 self.screen.blit(self.tiles[case], (x * TILE_SIZE, y * TILE_SIZE))
         pygame.draw.line(self.screen, (255, 255, 255), (WIDTH * TILE_SIZE, 0), (WIDTH * TILE_SIZE, HEIGHT * TILE_SIZE))
 
-    def is_colliding(self, x, y, ghost=False):
+    def is_colliding(self, x, y, in_spawn=False):
         """return if the cell coresponding to the given position is a wall or not
         Args:
             x (int): x position in the labyrinth
@@ -44,7 +44,7 @@ class Labyrinth:
             bool: True if the cell is a wall, False otherways
         """
         if self.map[y][x] in self.COLLISION:
-            if ghost and self.map[y][x] == 18:
+            if in_spawn and self.map[y][x] == 18:
                 return False
             return True
 
@@ -54,17 +54,17 @@ class Labyrinth:
             res += sum([1 for j in i if j in count_type])
         return res
     
-    def get_possible_cells(self, x, y, aditiv_wall=[]):
+    def get_possible_cells(self, x, y, aditiv_wall=[], in_spawn=False):
         around = []
         for new_x, new_y in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             node_position = (x + new_x, y + new_y)
             around.append(node_position)
         around = map(lambda x: self.normalize_pos(*x), around)
         around = tuple(around)
-        around = filter(lambda x: not self.is_colliding(*x, True) and x not in aditiv_wall, around)
+        around = filter(lambda x: not self.is_colliding(*x, in_spawn) and x not in aditiv_wall, around)
         return tuple(around)
     
-    def astar(self, start, end, aditiv_wall=[]):
+    def astar(self, start, end, aditiv_wall=[], in_spawn=False):
         if start == end:
             return [start, start]
         start_node = Node(None, start)
@@ -97,7 +97,7 @@ class Labyrinth:
                 return path[::-1]
             
             # génération des noeux des cases adjacentes
-            children = [Node(current_node, i) for i in self.get_possible_cells(*current_node.position, aditiv_wall)]
+            children = [Node(current_node, i) for i in self.get_possible_cells(*current_node.position, aditiv_wall, in_spawn)]
             aditiv_wall = []
             
             # récupération des bons noeux
@@ -113,6 +113,8 @@ class Labyrinth:
                         break
                 else:
                     open_list.append(child)
+        
+        raise ValueError("start has no path to end")
     
     def change_tile(self, x, y, tile):
         self.map[y][x] = tile

@@ -5,18 +5,20 @@ import random
 
 class Ghost(Character):
     direction_to_sens = {(-1,0): 0, (1,0): 1, (0,-1): 2, (0,1): 3}
+    spawn = ((11,13),(12,14),(13,13),(14,13),(15,13),(16,13),
+             (11,14),(12,13),(13,14),(14,14),(15,14),(16,14),
+             (11,15),(12,14),(13,15),(14,15),(15,15),(16,15))
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), color=(255, 0, 0)) -> None:
-
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0), time_in_spawn=0, color=(255, 0, 0)) -> None:
         super().__init__(x, y, speed, direction, labyrinth)
         self.current_sens = self.direction_to_sens[self.direction]
         self.current_cell = None
+        self.in_spawn = self.get_actual_cell() in self.spawn
+        self.can_go_out = False
+        self.creat_time = pygame.time.get_ticks()
+        self.time_in_spawn = time_in_spawn
         for image in self.sprites:
             pygame.PixelArray(image).replace((237, 28, 36, 255), color)
-
-        # if self.can_move((self.pos_x+self.direction[0]*TILE_SIZE, self.pos_y+self.direction[1]*TILE_SIZE)):
-        #     return
-        # can be useful to forbid to the ghosts to go back while moving
 
     def load_sprites(self):
         for direction in ("left", "right", "up", "down"):
@@ -40,7 +42,7 @@ class Ghost(Character):
             return True
         
         pos = self.get_actual_cell()
-        cells = self.labyrinth.get_possible_cells(*pos)
+        cells = self.labyrinth.get_possible_cells(*pos, in_spawn=self.can_go_out)
 
         return tuple(filter(fonc, cells))
     
@@ -78,33 +80,39 @@ class Ghost(Character):
             tile = self.next_tile_to_take(possible_move, best_move)
             direction = self.direction_to_take(*tile)
             self.change_direction(direction)
-        have_move = self.move(True)
+        self.move(self.in_spawn)
+        if self.in_spawn:
+            if self.creat_time + self.time_in_spawn <= pygame.time.get_ticks():
+                self.can_go_out = True
+            if self.get_actual_cell() not in self.spawn:
+                self.in_spawn = False
+                self.can_go_out = False
     
     def seek(self, player:Character):
         pos = self.get_actual_cell()
-        return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()), [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])])
+        return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()), [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])], self.in_spawn)
 
 
 class Blinky(Ghost):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, (255, 0, 0))
+        super().__init__(x, y, labyrinth, speed, direction, 0, (255, 0, 0))
 
 
 class Pinky(Ghost):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, (255, 184, 255))
+        super().__init__(x, y, labyrinth, speed, direction, 3333, (255, 184, 255))
 
 
 class Inky(Ghost):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, (0, 255, 255))
+        super().__init__(x, y, labyrinth, speed, direction, 6666, (0, 255, 255))
 
 
    
 class Clyde(Ghost):
 
     def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(-1,0)) -> None:
-        super().__init__(x, y, labyrinth, speed, direction, (255, 184, 81))
+        super().__init__(x, y, labyrinth, speed, direction, 9999, (255, 184, 81))

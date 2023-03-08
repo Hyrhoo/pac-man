@@ -86,11 +86,11 @@ class Pac_man(Character):
             end_ghost_x, end_ghost_y = start_ghost_x+TILE_SIZE, start_ghost_y+TILE_SIZE
             if ((start_ghost_x <= start_self_x <= end_ghost_x and start_ghost_y <= start_self_y <= end_ghost_y)
             or (start_self_x <= start_ghost_x <= end_self_x and start_self_y <= start_ghost_y <= end_self_y)):
-                if not self.is_seeker:
-                    import sys
-                    print("T'es trop con, t'es mort !")
-                    sys.exit()
-                ghost_group.remove(ghost)
+                #if not self.is_seeker:
+                #    import sys
+                #    print("T'es trop con, t'es mort !")
+                #    sys.exit()
+                #ghost_group.remove(ghost)
                 pass
 
 
