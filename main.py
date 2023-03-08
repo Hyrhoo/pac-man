@@ -17,9 +17,9 @@ clyde = Clyde(TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, labyrinth, direction=(0
 
 player_group.add(player)
 ghost_group.add(blinky)
-#ghost_group.add(pinky)
-#ghost_group.add(inky)
-#ghost_group.add(clyde)
+ghost_group.add(pinky)
+ghost_group.add(inky)
+ghost_group.add(clyde)
 
 print(blinky.chasse(player), "\n")
 print(pinky.chasse(player), "\n")

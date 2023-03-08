@@ -30,20 +30,16 @@ class Ghost(Character):
     def get_possible_cells(self):
         pos = self.get_actual_cell()
         cells = self.labyrinth.get_possible_cells(*pos)
+        print(cells)
         def fonc(x):
-            if self.direction[0] == -1:
-                if x[0] > pos[0]:
-                    return False
-            if self.direction[0] == 1:
-                if x[0] < pos[0]:
-                    return False
-            if self.direction[1] == -1:
-                if x[1] > pos[1]:
-                    return False
-            if self.direction[1] == 1:
-                if x[1] < pos[1]:
-                    return False
+            if x[0] == pos[0] + self.direction[0] and x[1] == pos[1] + self.direction[1]:
+                return True
+            if self.direction[1] and x[0] != pos[0]:
+                return False
+            if self.direction[0] and x[1] != pos[1]:
+                return False
             return True
+        
         return tuple(filter(fonc, cells))
     
     def directuion_to_take(self, x, y):
@@ -78,12 +74,16 @@ class Ghost(Character):
     def update(self, player) -> None:
         self.animation()
         possible_move = self.get_possible_cells()
-        if possible_move:   # can change direction
+        print(possible_move, self.get_actual_cell(), self.direction)
+        if len(possible_move) > 1:   # can change direction
             path = self.chasse(player)
             tile = self.next_tile_to_take(possible_move, path)
             direction = self.directuion_to_take(*tile)
             self.change_direction(direction)
-        have_move = self.move()
+        elif possible_move[0] != (self.pos_x + self.direction[0], self.pos_y + self.direction[1]):
+            direction = self.directuion_to_take(*possible_move[0])
+            self.change_direction(direction)
+        have_move = self.move(True)
     
     def chasse(self, player:Character):
         return self.labyrinth.astar(self.pos_in_laby(*self.get_center_pos()), player.pos_in_laby(*player.get_center_pos()))
