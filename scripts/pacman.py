@@ -106,7 +106,7 @@ class Pac_man(Character):
             if (x+0.2*width<x_ghost+width_ghost<x+width or x<x_ghost<x+width-0.2*width) and (y<y_ghost+height_ghost<y+height or y<y_ghost<y+height-0.2*height):
                 if ghost.is_weaken:
                     ghost_group.remove(ghost)
-                    new_ghost = type(ghost)(self.labyrinth, time_in_spawn=randint(3000, 7000))
+                    new_ghost = type(ghost)(self.labyrinth, time_in_spawn=randint(5000, 8000))
                     ghost_group.add(new_ghost)
                     if self.nb_eat == 0:
                         self.nb_eat = 2
