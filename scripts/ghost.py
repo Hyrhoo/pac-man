@@ -143,13 +143,14 @@ class Ghost(Character):
                 self.current_sens = self.direction_to_sens[self.direction]
 
     def seek(self, destination):
+        
         """chasse le joueur
 
         Args:
-            player (Character): le joueur à chasser
+            destination (tuple[int]): la position à rejoindre
 
         Returns:
-            list[tuple[int]]: le chemain le plus court au joueur
+            list[tuple[int]]: le chemain le plus court jusqu'à la position donner
         """
         pos = self.get_actual_cell()
         return self.labyrinth.astar(pos, destination, [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])], self.in_spawn)
@@ -170,6 +171,14 @@ class Blinky(Ghost):
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 0, 0))
     
     def seek(self, player:Character):
+        """rejoint le point donner
+
+        Args:
+            player (Character): le joueur à chasser
+
+        Returns:
+            list[tuple[int]]: le chemain le plus court pour aller juqu'au joueur
+        """
         destination = player.get_actual_cell()
         return super().seek(destination)
 
@@ -180,6 +189,14 @@ class Pinky(Ghost):
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 255))
 
     def seek(self, player:Character):
+        """chasse le joueur
+
+        Args:
+            player (Character): le joueur à chasser
+
+        Returns:
+            list[tuple[int]]: le chemain le plus court pour aller juqu'au joueur
+        """
         destination = player.get_actual_cell()
         return super().seek(destination)
 
@@ -190,6 +207,14 @@ class Inky(Ghost):
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (0, 255, 255))
     
     def seek(self, player:Character):
+        """chasse le joueur
+
+        Args:
+            player (Character): le joueur à chasser
+
+        Returns:
+            list[tuple[int]]: le chemain le plus court pour aller juqu'au joueur
+        """
         destination = player.get_actual_cell()
         return super().seek(destination)
 
@@ -201,5 +226,13 @@ class Clyde(Ghost):
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 81))
     
     def seek(self, player:Character):
+        """chasse le joueur
+
+        Args:
+            player (Character): le joueur à chasser
+
+        Returns:
+            list[tuple[int]]: le chemain le plus court pour aller juqu'au joueur
+        """
         destination = player.get_actual_cell()
         return super().seek(destination)
