@@ -48,7 +48,7 @@ class Pac_man(Character):
             self.reset_direction(pos_in_laby)
             self.input_direction = None
 
-    def update(self, keys):
+    def update(self, keys, ghost_group):
         """call all the required functions for the update of the caracter each frame 
 
         Args:
@@ -67,6 +67,7 @@ class Pac_man(Character):
         if self.slow:
             self.speed = temporary_speed
             self.slow = False
+        self.eat(ghost_group)
         # check the hitboxes
         #screen.fill("#FF0000",pygame.Rect(self.pos_x, self.pos_y, TILE_SIZE, TILE_SIZE))
 

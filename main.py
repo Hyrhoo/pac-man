@@ -36,8 +36,6 @@ player_group, ghost_group = reset()
 run = True
 while run:
     labyrinth.draw_level()
-    for player in player_group:
-        player.eat(ghost_group)
     keys = pygame.event.get()
     for event in keys:
         if event.type == pygame.QUIT:
@@ -46,13 +44,13 @@ while run:
             if event.key == pygame.K_ESCAPE:
                 run = False
 
-    player_group.update(keys)
+    player_group.update(keys, ghost_group)
     player_group.draw(screen)
     ghost_group.update(player_group.sprites()[0])
     ghost_group.draw(screen)
 
     pygame.display.flip()
-    #print(clock.get_fps())  # juste pour afficher les fps
+    # print(clock.get_fps())  # juste pour afficher les fps
     clock.tick(GLOBAL_FPS)
 
 pygame.quit()
