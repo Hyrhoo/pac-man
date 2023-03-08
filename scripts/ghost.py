@@ -5,7 +5,8 @@ import random
 
 class Ghost(Character):
     direction_to_sens = {(-1,0): 0, (1,0): 1, (0,-1): 2, (0,1): 3}
-    spawn = ((11,13),(12,14),(13,13),(14,13),(15,13),(16,13),
+    spawn = (        (12,12),(13,12),(14,12),(15,12)        ,
+             (11,13),(12,14),(13,13),(14,13),(15,13),(16,13),
              (11,14),(12,13),(13,14),(14,14),(15,14),(16,14),
              (11,15),(12,15),(13,15),(14,15),(15,15),(16,15))
 
@@ -23,7 +24,7 @@ class Ghost(Character):
             pygame.PixelArray(image).replace((237, 28, 36, 255), color)
 
     def __repr__(self):
-        return f"{type(self)} - {(self.pos_x, self.pos_y)} - {self.get_actual_cell()}, {self.labyrinth.map[self.get_actual_cell()[1]][self.get_actual_cell()[0]]} - {self.in_spawn}, {self.can_go_out}, {self.creat_time}, {self.time_in_spawn}"
+        return f"{type(self)} - {(self.pos_x, self.pos_y)}, {self.get_actual_cell()}, {self.labyrinth.map[self.get_actual_cell()[1]][self.get_actual_cell()[0]]} - {self.direction} - {self.in_spawn}, {self.can_go_out}, {self.creat_time}, {self.time_in_spawn}"
 
     def load_sprites(self):
         for direction in ("left", "right", "up", "down", "weaken"):
@@ -78,6 +79,7 @@ class Ghost(Character):
         self.image = self.sprites[int(self.current_sprite + self.current_sens*NUMBER_IMG_GHOSTS)]
     
     def update(self, player) -> None:
+        print(self)
         self.animation()
 
         # gestion déplacement
@@ -98,6 +100,7 @@ class Ghost(Character):
             if self.get_actual_cell() not in self.spawn:
                 self.in_spawn = False
                 self.can_go_out = False
+                self.direction = (-1, 0)
             
         if self.is_weaken:
             if pygame.time.get_ticks() >= self.time_weaken:
