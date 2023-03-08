@@ -13,7 +13,7 @@ class Pac_man(Character):
         self.input_direction = None
         self.score = 0
         self.slow = False
-        self.nb_eat = 0
+        self.score_eat = 200
 
 
     def load_sprites(self):
@@ -83,7 +83,7 @@ class Pac_man(Character):
             self.labyrinth.change_tile(x, y, 0)
             for ghost in ghost_group:
                 ghost.weaken(10_000)
-            self.nb_eat = 0
+            self.score_eat = 200
             self.slow = True
 
 
@@ -102,8 +102,8 @@ class Pac_man(Character):
                     ghost_group.remove(ghost)
                     new_ghost = type(ghost)(self.labyrinth, time_in_spawn=random.randint(5000, 8000))
                     ghost_group.add(new_ghost)
-                    self.score += 200 * 2 ** self.nb_eat
-                    self.nb_eat += 1
+                    self.score += self.score_eat
+                    self.nb_eat *= 2
                 else:
                     import sys
                     print("T'es trop con, t'es mort !")
