@@ -50,11 +50,6 @@ while run:
     player_group.draw(screen)
     ghost_group.update(player_group.sprites()[0])
     ghost_group.draw(screen)
-    
-    #blinky.chasse(player)
-    #pinky.chasse(player)
-    #inky.chasse(player)
-    #clyde.chasse(player)
 
     pygame.display.flip()
     #print(clock.get_fps())  # juste pour afficher les fps

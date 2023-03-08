@@ -81,17 +81,17 @@ class Character(pygame.sprite.Sprite):
             self.set_pos(0, self.pos_y)
             return
         
-    def can_move(self, new_pos):
+    def can_move(self, new_pos, in_spawn=False):
         """Check if the caracter can move"""
         front_pos = self.get_front_pos(*new_pos, self.direction)
         pos_in_laby = self.pos_in_laby(*front_pos)
-        return not self.labyrinth.is_colliding(*pos_in_laby)
+        return not self.labyrinth.is_colliding(*pos_in_laby, in_spawn)
 
 
-    def move(self):
+    def move(self, in_spawn=False):
         """move the caracter from his direction and his speed"""
         new_pos = (self.pos_x + round(self.direction[0]*self.speed), self.pos_y + round(self.direction[1]*self.speed))
-        if not self.can_move(new_pos):
+        if not self.can_move(new_pos, in_spawn):
             self.correction_pos()
             return False
         self.set_pos(*new_pos)
