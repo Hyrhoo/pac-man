@@ -154,7 +154,6 @@ class Ghost(Character):
                 if pygame.time.get_ticks() > self.time_white:
                     self.is_white = not self.is_white
                     self.time_white = pygame.time.get_ticks() + 400
-                    print(self.is_white)
                 if self.is_white:
                     pygame.PixelArray(self.image).replace((250, 185, 176, 255), (255, 0, 0, 255))
                     pygame.PixelArray(self.image).replace((31, 13, 255, 255), (255, 255, 255, 255))
