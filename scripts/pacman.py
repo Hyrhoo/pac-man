@@ -8,9 +8,11 @@ class Pac_man(Character):
     def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(1,0)) -> None:
 
         super().__init__(x, y, speed, direction, labyrinth)
+        self.base_speed = self.speed
         self.input_direction = None
         self.score = 0
         self.slow = False
+        self.timer_slow = 0
         self.score_eat = 200
 
 
@@ -50,15 +52,15 @@ class Pac_man(Character):
             keys (tuple[Pygame Event]): the event enter this frame
         """
         self.get_input_direction(keys)
-        temporary_speed = self.speed
-        if self.slow:
-            self.speed = 0.6*self.speed
+        #temporary_speed = self.speed
+        #if self.slow:
+        #    self.speed = 0*self.speed
         self.set_direction()
         have_move = self.move()
         if have_move:
             self.animate()
-        if self.slow:
-            self.speed = temporary_speed
+        if self.slow and self.timer_slow <= pygame.time.get_ticks():
+            self.speed = self.base_speed
             self.slow = False
         self.eat(ghost_group)
         # check the hitboxes
@@ -67,7 +69,7 @@ class Pac_man(Character):
     def eat(self, ghost_group):
         """Try to eat everything on his way !"""
         self.eat_pac_gomme(ghost_group)
-        self.eat_ghost(ghost_group)
+        #self.eat_ghost(ghost_group)
     
     def eat_pac_gomme(self, ghost_group):
         x, y = self.get_actual_cell()
@@ -76,13 +78,14 @@ class Pac_man(Character):
             self.score += 10
             self.labyrinth.change_tile(x, y, 0)
             self.slow = True
+            self.timer_slow = pygame.time.get_ticks() + 150
+            self.speed = 0.6*self.base_speed
         elif case == 2:
             self.score += 50
             self.labyrinth.change_tile(x, y, 0)
             for ghost in ghost_group:
                 ghost.weaken(10_000)
             self.score_eat = 200
-            self.slow = True
 
 
     def eat_ghost(self, ghost_group):

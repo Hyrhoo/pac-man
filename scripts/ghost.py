@@ -11,7 +11,7 @@ class Ghost(Character):
 
     def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dicipe", timer_hunt=2500, speed=10, direction=(-1,0), time_in_spawn=0, color=(255, 0, 0)) -> None:
         super().__init__(x, y, speed, direction, labyrinth)
-        self.base_speed = speed * SPEED_MULTI
+        self.base_speed = self.speed
         self.current_sens = self.direction_to_sens[self.direction]
         self.current_cell = None
         
@@ -193,16 +193,15 @@ class Ghost(Character):
         Args:
             time (int): temps de faiblaisse en miliseconde
         """
-        if not self.in_spawn:
-            self.speed = self.base_speed * 0.4
-            self.is_weaken = True
-            self.time_weaken = pygame.time.get_ticks() + time
+        self.speed = self.base_speed * 0.6
+        self.is_weaken = True
+        self.time_weaken = pygame.time.get_ticks() + time
 
 
 class Blinky(Ghost):
     dispersion_point = (26, 1)
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dicipe", timer_hunt=4000, speed=8.6, direction=(-1,0), time_in_spawn=0) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dicipe", timer_hunt=4000, speed=8.5, direction=(-1,0), time_in_spawn=0) -> None:
         super().__init__(labyrinth, x, y, type_hunt, timer_hunt, speed, direction, time_in_spawn, (255, 0, 0))
     
     def hunt(self, player:Character, blinky:Ghost):
@@ -224,7 +223,7 @@ class Blinky(Ghost):
 class Pinky(Ghost):
     dispersion_point = (1, 1)
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dicipe", timer_hunt=4000, speed=8.6, direction=(-1,0), time_in_spawn=0) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dicipe", timer_hunt=4000, speed=8.5, direction=(-1,0), time_in_spawn=0) -> None:
         super().__init__(labyrinth, x, y, type_hunt, timer_hunt, speed, direction, time_in_spawn, (255, 184, 255))
 
     def hunt(self, player:Character, blinky:Ghost):
@@ -247,7 +246,7 @@ class Pinky(Ghost):
 class Inky(Ghost):
     dispersion_point = (26, 29)
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dicipe", timer_hunt=4000, speed=8.6, direction=(-1,0), time_in_spawn=2500) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dicipe", timer_hunt=4000, speed=8.5, direction=(-1,0), time_in_spawn=2500) -> None:
         super().__init__(labyrinth, x, y, type_hunt, timer_hunt, speed, direction, time_in_spawn, (0, 255, 255))
     
     def hunt(self, player:Character, blinky:Ghost):
@@ -273,7 +272,7 @@ class Inky(Ghost):
 class Clyde(Ghost):
     dispersion_point = (1, 29)
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dicipe", timer_hunt=4000, speed=8.6, direction=(-1,0), time_in_spawn=5000) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dicipe", timer_hunt=4000, speed=8.5, direction=(-1,0), time_in_spawn=5000) -> None:
         super().__init__(labyrinth, x, y, type_hunt, timer_hunt, speed, direction, time_in_spawn, (255, 184, 81))
     
     def hunt(self, player:Character, blinky:Ghost):
