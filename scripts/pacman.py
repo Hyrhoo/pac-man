@@ -69,7 +69,7 @@ class Pac_man(Character):
     def eat(self, ghost_group):
         """Try to eat everything on his way !"""
         self.eat_pac_gomme(ghost_group)
-        #self.eat_ghost(ghost_group)
+        self.eat_ghost(ghost_group)
     
     def eat_pac_gomme(self, ghost_group):
         x, y = self.get_actual_cell()
