@@ -120,7 +120,7 @@ class Ghost(Character):
         if self.current_cell != actual_cell and self.labyrinth.is_intersect(*actual_cell):
             self.current_cell = actual_cell
             possible_move = self.get_possible_cells()
-            best_move = self.seek(player)[1]
+            best_move = self.hunt(player)[1]
             tile = self.next_tile_to_take(possible_move, best_move)
             direction = self.direction_to_take(*tile)
             self.change_direction(direction)
@@ -141,8 +141,7 @@ class Ghost(Character):
                 self.is_weaken = False
                 self.current_sens = self.direction_to_sens[self.direction]
 
-    def seek(self, destination):
-        
+    def hunt(self, destination):
         """chasse le joueur
 
         Args:
@@ -152,7 +151,8 @@ class Ghost(Character):
             list[tuple[int]]: le chemain le plus court jusqu'à la position donner
         """
         pos = self.get_actual_cell()
-        return self.labyrinth.astar(pos, destination, [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])], self.in_spawn)
+        wall = [self.labyrinth.normalize_pos(pos[0]-self.direction[0], pos[1]-self.direction[1])]
+        return self.labyrinth.astar(pos, destination, wall, self.in_spawn)
 
     def weaken(self, time):
         """rand le fantôme faible au joueur pour un temps donner
@@ -169,8 +169,8 @@ class Blinky(Ghost):
     def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=0) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 0, 0))
     
-    def seek(self, player:Character):
-        """rejoint le point donner
+    def hunt(self, player:Character):
+        """chasse le joueur
 
         Args:
             player (Character): le joueur à chasser
@@ -179,7 +179,7 @@ class Blinky(Ghost):
             list[tuple[int]]: le chemain le plus court pour aller juqu'au joueur
         """
         destination = player.get_actual_cell()
-        return super().seek(destination)
+        return super().hunt(destination)
 
 
 class Pinky(Ghost):
@@ -187,7 +187,7 @@ class Pinky(Ghost):
     def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=3333) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 255))
 
-    def seek(self, player:Character):
+    def hunt(self, player:Character):
         """chasse le joueur
 
         Args:
@@ -197,7 +197,7 @@ class Pinky(Ghost):
             list[tuple[int]]: le chemain le plus court pour aller juqu'au joueur
         """
         destination = player.get_actual_cell()
-        return super().seek(destination)
+        return super().hunt(destination)
 
 
 class Inky(Ghost):
@@ -205,7 +205,7 @@ class Inky(Ghost):
     def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=6666) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (0, 255, 255))
     
-    def seek(self, player:Character):
+    def hunt(self, player:Character):
         """chasse le joueur
 
         Args:
@@ -215,7 +215,7 @@ class Inky(Ghost):
             list[tuple[int]]: le chemain le plus court pour aller juqu'au joueur
         """
         destination = player.get_actual_cell()
-        return super().seek(destination)
+        return super().hunt(destination)
 
 
    
@@ -224,7 +224,7 @@ class Clyde(Ghost):
     def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, speed=8.7, direction=(-1,0), time_in_spawn=9999) -> None:
         super().__init__(labyrinth, x, y, speed, direction, time_in_spawn, (255, 184, 81))
     
-    def seek(self, player:Character):
+    def hunt(self, player:Character):
         """chasse le joueur
 
         Args:
@@ -234,4 +234,4 @@ class Clyde(Ghost):
             list[tuple[int]]: le chemain le plus court pour aller juqu'au joueur
         """
         destination = player.get_actual_cell()
-        return super().seek(destination)
+        return super().hunt(destination)
