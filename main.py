@@ -12,9 +12,9 @@ def reset():
 
 
     blinky = Blinky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, type_hunt="hunt", timer_hunt=10000)
-    pinky = Pinky(labyrinth, TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=10000)
-    inky = Inky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=10000)
-    clyde = Clyde(labyrinth, TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=10000)
+    pinky = Pinky(labyrinth, TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=11000)
+    inky = Inky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=14000)
+    clyde = Clyde(labyrinth, TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=17000)
 
     player_group.add(player)
     ghost_group.add(blinky)
