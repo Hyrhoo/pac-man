@@ -103,9 +103,11 @@ class Labyrinth:
         if start == end:
             return [start, start]
         start_node = Node(None, start)
-        start_node.g = start_node.h = start_node.f = 0
+        start_node.g = 0
+        start_node.h = start_node.f = float("inf")
         end_node = Node(None, end)
         end_node.g = end_node.h = end_node.f = 0
+        closest = start_node
 
         open_list = []
         closed_list = []
@@ -140,16 +142,30 @@ class Labyrinth:
                 if child in closed_list:
                     continue
                 child.g = current_node.g + 1
-                child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
+                child.h = (((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2))**0.5
                 child.f = child.g + child.h
 
                 for open_node in open_list:
                     if child == open_node and child.g > open_node.g:
                         break
                 else:
+                    # pour trouver un chemain sans avoir à parcourrir toute la map si le chemain n'existe pas
+                    # pour éviter les problème de performance
+                    if child.h < closest.h:
+                        closest = child
+                    elif child.h > closest.h + 10:
+                        # après teste, 27 permet de trouver le chemain pour allez d'un coint à l'autre de la map (donc +/- n'importe quelle chemains)
+                        # un nombre moins grand (comme 10) devrais quand même permetre aux fantômes de trouver la dirrection pour allez
+                        # vers pac-man mais pas le chemain complet (et je suis même pas sûr de ce que je dis)
+                        path = []
+                        current = closest
+                        while current is not None:
+                            path.append(current.position)
+                            current = current.parent
+                        return path[::-1]
                     open_list.append(child)
         
-        raise ValueError(f"start point '{start}' has no path to end point '{end}'")
+        raise ValueError(f"start point '{start}' has no path to end point '{end}'")   # pour faire une erreur si le chemain n'existe pas
     
     def change_tile(self, x, y, tile):
         """change une luile du labyrinthe
@@ -208,7 +224,7 @@ class Node():
         self.f = 0
 
     def __repr__(self):
-        return str(self.position)
+        return f"{self.position}"
 
     def __eq__(self, other):
         return self.position == other.position
