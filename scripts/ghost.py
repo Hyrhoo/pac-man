@@ -193,9 +193,10 @@ class Ghost(Character):
         Args:
             time (int): temps de faiblaisse en miliseconde
         """
-        self.speed = self.base_speed * 0.3
-        self.is_weaken = True
-        self.time_weaken = pygame.time.get_ticks() + time
+        if not self.in_spawn:
+            self.speed = self.base_speed * 0.4
+            self.is_weaken = True
+            self.time_weaken = pygame.time.get_ticks() + time
 
 
 class Blinky(Ghost):
