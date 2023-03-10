@@ -5,7 +5,7 @@ from scripts.character import Character
 class Pac_man(Character):
     keys_directions = {pygame.K_UP: (0,-1), pygame.K_DOWN: (0,1), pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0)}
 
-    def __init__(self, x, y, labyrinth: Labyrinth, speed=10, direction=(1,0)) -> None:
+    def __init__(self, x, y, labyrinth: Labyrinth, speed=10.55, direction=(1,0)) -> None:
 
         super().__init__(x, y, speed, direction, labyrinth)
         self.base_speed = self.speed
@@ -52,9 +52,6 @@ class Pac_man(Character):
             keys (tuple[Pygame Event]): the event enter this frame
         """
         self.get_input_direction(keys)
-        #temporary_speed = self.speed
-        #if self.slow:
-        #    self.speed = 0*self.speed
         self.set_direction()
         have_move = self.move()
         if have_move:
@@ -78,8 +75,8 @@ class Pac_man(Character):
             self.score += 10
             self.labyrinth.change_tile(x, y, 0)
             self.slow = True
-            self.timer_slow = pygame.time.get_ticks() + 175
-            self.speed = 0.7*self.base_speed
+            self.timer_slow = pygame.time.get_ticks() + 150
+            self.speed = 0.8*self.base_speed
         elif case == 2:
             self.score += 50
             self.labyrinth.change_tile(x, y, 0)
@@ -101,7 +98,7 @@ class Pac_man(Character):
             if (x+0.2*width<x_ghost+width_ghost<x+width or x<x_ghost<x+width-0.2*width) and (y<y_ghost+height_ghost<y+height or y<y_ghost<y+height-0.2*height):
                 if ghost.is_weaken:
                     ghost_group.remove(ghost)
-                    new_ghost = type(ghost)(self.labyrinth, time_in_spawn=random.randint(5000, 8000))
+                    new_ghost = type(ghost)(self.labyrinth, time_in_spawn=random.randint(5_000, 8_000))
                     ghost_group.add(new_ghost)
                     self.score += self.score_eat
                     self.score_eat *= 2

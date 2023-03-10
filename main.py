@@ -5,16 +5,21 @@ from scripts.ghost import *
 
 
 def reset():
+    """reset l'état du jeu
+
+    Returns:
+        pygame Groupe: groupe de joueur / fantôme
+    """
     ghost_group = pygame.sprite.Group()
     player_group = pygame.sprite.Group()
 
     player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 
 
-    blinky = Blinky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, type_hunt="hunt", timer_hunt=10000)
-    pinky = Pinky(labyrinth, TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=11000)
-    inky = Inky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=14000)
-    clyde = Clyde(labyrinth, TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=17000)
+    blinky = Blinky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, type_hunt="hunt", timer_hunt=10_000)
+    pinky = Pinky(labyrinth, TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=11_000)
+    inky = Inky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=14_000)
+    clyde = Clyde(labyrinth, TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=17_000)
 
     player_group.add(player)
     ghost_group.add(blinky)
