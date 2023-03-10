@@ -104,6 +104,7 @@ class Pac_man(Character):
                     self.score_eat *= 2
                 else:
                     import sys
+                    print(self.score)
                     print("T'es trop con, t'es mort !")
                     sys.exit()
 
