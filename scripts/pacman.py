@@ -78,8 +78,8 @@ class Pac_man(Character):
             self.score += 10
             self.labyrinth.change_tile(x, y, 0)
             self.slow = True
-            self.timer_slow = pygame.time.get_ticks() + 150
-            self.speed = 0.6*self.base_speed
+            self.timer_slow = pygame.time.get_ticks() + 175
+            self.speed = 0.7*self.base_speed
         elif case == 2:
             self.score += 50
             self.labyrinth.change_tile(x, y, 0)
