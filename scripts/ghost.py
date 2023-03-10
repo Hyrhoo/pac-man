@@ -138,7 +138,7 @@ class Ghost(Character):
             if self.get_actual_cell() not in self.spawn:
                 self.in_spawn = False
                 self.can_go_out = False
-                self.direction = (-1, 0)
+                self.change_direction((-1, 0))
 
     def weaken_gestion(self):
         if self.is_weaken:
