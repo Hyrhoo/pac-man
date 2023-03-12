@@ -54,10 +54,10 @@ class Labyrinth:
         """compte le nombre de gommes restante dans le labyrinthe
 
         Args:
-            count_type (tuple[int], optional): le tpyme des gommes à compter. Defaults to (1, 2).
+            count_type (tuple[int], optional): le type des gommes à compter. Defaults to (1, 2).
 
         Returns:
-            int: le nombre de gommes compté
+            int: le nombre de gommes comptées
         """
         res = 0
         for i in self.map:

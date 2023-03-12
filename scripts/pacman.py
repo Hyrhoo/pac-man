@@ -10,11 +10,9 @@ class Pac_man(Character):
         super().__init__(x, y, speed, direction, labyrinth)
         self.base_speed = self.speed
         self.input_direction = None
-        self.score = 0
         self.slow = False
         self.timer_slow = 0
         self.score_eat = 200
-
 
     def load_sprites(self):
         for nbr_img in range(1, NUMBER_IMG_PACMAN+1):
@@ -59,33 +57,37 @@ class Pac_man(Character):
         if self.slow and self.timer_slow <= pygame.time.get_ticks():
             self.speed = self.base_speed
             self.slow = False
-        self.eat(ghost_group)
+        return self.eat(ghost_group)
         # check the hitboxes
         #screen.fill("#FF0000",pygame.Rect(self.pos_x, self.pos_y, TILE_SIZE, TILE_SIZE))
 
     def eat(self, ghost_group):
         """Try to eat everything on his way !"""
-        self.eat_pac_gomme(ghost_group)
-        self.eat_ghost(ghost_group)
-    
+        score = self.eat_pac_gomme(ghost_group)
+        death, score2 = self.eat_ghost(ghost_group)
+        return death, score + score2
+
     def eat_pac_gomme(self, ghost_group):
+        score = 0
         x, y = self.get_actual_cell()
         case = self.labyrinth.map[y][x]
         if case == 1:
-            self.score += 10
+            score += 10
             self.labyrinth.change_tile(x, y, 0)
             self.slow = True
             self.timer_slow = pygame.time.get_ticks() + 150
             self.speed = 0.8*self.base_speed
         elif case == 2:
-            self.score += 50
+            score += 50
             self.labyrinth.change_tile(x, y, 0)
             for ghost in ghost_group:
                 ghost.weaken(10_000)
             self.score_eat = 200
+        return score
 
 
     def eat_ghost(self, ghost_group):
+        score = 0
         x, y, width, height = pygame.mask.from_surface(self.image).get_bounding_rects()[0]
         x += self.pos_x
         y += self.pos_y
@@ -100,14 +102,11 @@ class Pac_man(Character):
                     ghost_group.remove(ghost)
                     new_ghost = type(ghost)(self.labyrinth, time_in_spawn=random.randint(5_000, 8_000))
                     ghost_group.add(new_ghost)
-                    self.score += self.score_eat
+                    score += self.score_eat
                     self.score_eat *= 2
                 else:
-                    import sys
-                    print(self.score)
-                    print("T'es trop con, t'es mort !")
-                    sys.exit()
-
+                    return True, score
+        return None, score
 
     def animate(self):
         """draw the caracter on the screen"""
