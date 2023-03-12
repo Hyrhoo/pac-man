@@ -102,8 +102,9 @@ while run and lifes:
         if labyrinth.get_nbr_gommes() == 0:
             game = False
             run = False
+            labyrinth.draw_level()
 
-        print(clock.get_fps())  # juste pour afficher les fps
+        #print(clock.get_fps())  # juste pour afficher les fps
         clock.tick(GLOBAL_FPS)
     lifes -= 1
 
