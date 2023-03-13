@@ -4,7 +4,7 @@ from scripts.pacman import *
 from scripts.ghost import *
 
 
-def reset():
+def reset(time_wait):
     """reset l'état du jeu
 
     Returns:
@@ -15,10 +15,10 @@ def reset():
 
     player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 
-    blinky = Blinky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, type_hunt="hunt", timer_hunt=8_000)
-    pinky = Pinky(labyrinth, TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=7_000)
-    inky = Inky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=6_000)
-    clyde = Clyde(labyrinth, TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=5_000)
+    blinky = Blinky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, time_in_spawn=0, type_hunt="hunt", timer_hunt=8_000+time_wait)
+    pinky = Pinky(labyrinth, TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, time_in_spawn=1000+time_wait, type_hunt="hunt", timer_hunt=7_000+time_wait)
+    inky = Inky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, time_in_spawn=4000+time_wait, type_hunt="hunt", timer_hunt=6_000+time_wait)
+    clyde = Clyde(labyrinth, TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, time_in_spawn=7000+time_wait, type_hunt="hunt", timer_hunt=5_000+time_wait)
 
     player_group.add(player)
     ghost_group.add(blinky)
@@ -63,18 +63,27 @@ size = font.size("SCORE")
 
 screen.blit(sc_img, ((TILE_SIZE * (WIDTH + 1) - size[0] // 2, TILE_SIZE * HEIGHT // 2 - size[1])))
 
+start_sound = sounds["off game"]["start"]
+
+
     # ==== main loop ==== #
 
 run = True
 while run and lifes:
+    if lifes == 3:
+        start_sound.play()
+        time_wait = 4000
+    else:
+        time_wait = 1000
     display_lifes()
-    player_group, ghost_group = reset()
+    player_group, ghost_group = reset(time_wait)
     labyrinth.draw_level()
     player_group.draw(screen)
     ghost_group.draw(screen)
     pygame.display.flip()
-    pygame.time.wait(1000)
+    pygame.time.wait(time_wait)
     game = True
+    sounds["siren"]["1"].play(-1)
     while game and run:
         display_score()
         labyrinth.draw_level()
@@ -107,15 +116,20 @@ while run and lifes:
         clock.tick(GLOBAL_FPS)
     lifes -= 1
 
+print(score)
+if score == 14_620:
+    print("Bravo ! Vous avez effectué le score maximume !")
+
+sounds["siren"]["weak"].stop()
+sounds["siren"]["1"].stop()
+sounds["off game"]["end"].play()
 labyrinth.draw_level()
 player_group.draw(screen)
 ghost_group.draw(screen)
 pygame.display.flip()
 display_end_message()
 pygame.display.flip()
-pygame.time.wait(500)
+pygame.time.wait(int(sounds["off game"]["end"].get_length()*1000))
 pygame.quit()
 
-print(score)
-if score == 14_620:
-    print("Bravo ! Vous avez effectué le score maximume !")
+

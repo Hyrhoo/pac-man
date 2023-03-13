@@ -13,6 +13,9 @@ class Pac_man(Character):
         self.slow = False
         self.timer_slow = 0
         self.score_eat = 200
+        self.sound = 1
+        self.weak_mode = False
+        self.weak_timer = 0
 
     def load_sprites(self):
         for nbr_img in range(1, NUMBER_IMG_PACMAN+1):
@@ -49,6 +52,10 @@ class Pac_man(Character):
         Args:
             keys (tuple[Pygame Event]): the event enter this frame
         """
+        if self.weak_mode and self.weak_timer <= pygame.time.get_ticks():
+            sounds["siren"]["weak"].stop()
+            sounds["siren"]["1"].play(-1)
+            self.weak_mode = False
         self.get_input_direction(keys)
         self.set_direction()
         have_move = self.move()
@@ -77,12 +84,18 @@ class Pac_man(Character):
             self.slow = True
             self.timer_slow = pygame.time.get_ticks() + 150
             self.speed = 0.8*self.base_speed
+            sounds["eat"]["gomme"][self.sound].play()
+            self.sound = int(not self.sound)
         elif case == 2:
             score += 50
             self.labyrinth.change_tile(x, y, 0)
             for ghost in ghost_group:
                 ghost.weaken(10_000)
+            self.weak_timer = pygame.time.get_ticks() + 10_000
             self.score_eat = 200
+            sounds["siren"]["1"].stop()
+            sounds["siren"]["weak"].play(-1)
+            self.weak_mode = True
         return score
 
 
@@ -99,6 +112,7 @@ class Pac_man(Character):
             
             if (x+0.2*width<x_ghost+width_ghost<x+width or x<x_ghost<x+width-0.2*width) and (y<y_ghost+height_ghost<y+height or y<y_ghost<y+height-0.2*height):
                 if ghost.is_weaken:
+                    sounds["eat"]["ghost"].play()
                     ghost_group.remove(ghost)
                     type_chase = random.choice(["hunt", "dissipate"])
                     if type_chase == "hunt":
@@ -110,6 +124,17 @@ class Pac_man(Character):
                     score += self.score_eat
                     self.score_eat *= 2
                 else:
+                    sounds["siren"]["1"].stop()
+                    sounds["siren"]["weak"].stop()
+                    sound = sounds["death"]["1"]
+                    sound.play()
+                    pygame.time.wait(1200)
+                    sound.stop()
+                    sound = sounds["death"]["2"]
+                    sound.play()
+                    pygame.time.wait(200)
+                    sound.play()
+                    pygame.time.wait(200)
                     return True, score
         return None, score
 
