@@ -48,6 +48,19 @@ def display_end_message():
     size = font.size(message)
     screen.blit(message_image, ((TILE_SIZE * (WIDTH) // 2 - size[0] // 2, TILE_SIZE * HEIGHT // 2 - size[1])))
 
+def play_death():
+    sounds["siren"]["1"].stop()
+    sounds["siren"]["weak"].stop()
+    sound = sounds["death"]["1"]
+    sound.play()
+    pygame.time.wait(1200)
+    sound.stop()
+    sound = sounds["death"]["2"]
+    sound.play()
+    pygame.time.wait(200)
+    sound.play()
+    pygame.time.wait(200)
+
     # ==== init ==== #
 
 life_image = pygame.transform.scale(pygame.image.load(f"{DATA_DIRECTORY}/pacman/4.png").convert_alpha(), (TILE_SIZE, TILE_SIZE))
@@ -98,6 +111,7 @@ while run and lifes:
         for player in player_group:
             death, add_score = player.update(keys, ghost_group)
             if death:
+                play_death()
                 game = False
             score += add_score
 

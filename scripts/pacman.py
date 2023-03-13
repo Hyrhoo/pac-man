@@ -124,17 +124,6 @@ class Pac_man(Character):
                     score += self.score_eat
                     self.score_eat *= 2
                 else:
-                    sounds["siren"]["1"].stop()
-                    sounds["siren"]["weak"].stop()
-                    sound = sounds["death"]["1"]
-                    sound.play()
-                    pygame.time.wait(1200)
-                    sound.stop()
-                    sound = sounds["death"]["2"]
-                    sound.play()
-                    pygame.time.wait(200)
-                    sound.play()
-                    pygame.time.wait(200)
                     return True, score
         return None, score
 
