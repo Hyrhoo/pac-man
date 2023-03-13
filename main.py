@@ -15,10 +15,10 @@ def reset():
 
     player = Pac_man(TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*23, labyrinth)
 
-    blinky = Blinky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, type_hunt="hunt", timer_hunt=10_000)
-    pinky = Pinky(labyrinth, TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=11_000)
-    inky = Inky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=14_000)
-    clyde = Clyde(labyrinth, TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=17_000)
+    blinky = Blinky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*11, type_hunt="hunt", timer_hunt=8_000)
+    pinky = Pinky(labyrinth, TILE_SIZE*11 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=7_000)
+    inky = Inky(labyrinth, TILE_SIZE*13 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=6_000)
+    clyde = Clyde(labyrinth, TILE_SIZE*15 + TILE_SIZE//2, TILE_SIZE*14, type_hunt="hunt", timer_hunt=5_000)
 
     player_group.add(player)
     ghost_group.add(blinky)
@@ -114,5 +114,8 @@ pygame.display.flip()
 display_end_message()
 pygame.display.flip()
 pygame.time.wait(500)
-
 pygame.quit()
+
+print(score)
+if score == 14_620:
+    print("Bravo ! Vous avez effectué le score maximume !")

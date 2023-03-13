@@ -26,8 +26,8 @@ class Ghost(Character):
         self.time_white = 0
 
         self.type_hunt = type_hunt
-        self.timer_hunt = timer_hunt + (pygame.time.get_ticks() if self.type_hunt == "hunt" else 0)
-        self.can_change_hunt = True if self.type_hunt == "hunt" else False
+        self.timer_hunt = timer_hunt + pygame.time.get_ticks() + time_in_spawn
+        self.can_change_hunt = True
         self.can_change_direction = False
         
         for image in self.sprites:
@@ -86,14 +86,10 @@ class Ghost(Character):
             tuple[int]: la dirrection à prendre pour rejoindre la case
         """
         g_x, g_y = self.get_actual_cell()
-        if g_x < x:
-            return (1, 0)
-        if g_x > x:
-            return (-1, 0)
-        if g_y < y:
-            return (0, 1)
-        if g_y > y:
-            return (0, -1)
+        if g_x < x:return ( 1,  0)
+        if g_x > x:return (-1,  0)
+        if g_y < y:return ( 0,  1)
+        if g_y > y:return ( 0, -1)
         return self.direction
 
     def next_tile_to_take(self, possible_move, best_move):
@@ -106,7 +102,7 @@ class Ghost(Character):
         Returns:
             tuple[int]: la position que le fantôme vas devoire rejoindre
         """
-        if best_move in possible_move:
+        if not self.is_weaken and best_move in possible_move:
             return best_move
         return random.choice(possible_move)
 
@@ -124,7 +120,10 @@ class Ghost(Character):
         if (self.current_cell != actual_cell and self.labyrinth.is_intersect(*actual_cell)) or self.can_change_direction:
             self.current_cell = actual_cell
             possible_move = self.get_possible_cells()
-            best_move = self.hunt(player, blinky)[1]
+            if self.is_weaken:
+                best_move = None
+            else:
+                best_move = self.hunt(player, blinky)[1]
             tile = self.next_tile_to_take(possible_move, best_move)
             direction = self.direction_to_take(*tile)
             self.change_direction(direction)
@@ -144,7 +143,7 @@ class Ghost(Character):
         if self.is_weaken:
             if pygame.time.get_ticks() >= self.time_weaken:
                 self.type_hunt = "hunt"
-                self.timer_hunt = pygame.time.get_ticks() + random.randint(8_000, 12_000)
+                self.timer_hunt = pygame.time.get_ticks() + random.randint(7_500, 15_000)
                 self.speed = self.base_speed
                 self.is_weaken = False
                 self.current_sens = self.direction_to_sens[self.direction]
@@ -159,20 +158,18 @@ class Ghost(Character):
                     pygame.PixelArray(self.image).replace((31, 13, 255, 255), (255, 255, 255, 255))
     
     def hunt_mode_gestion(self):
-        if self.can_change_hunt and self.type_hunt != "fuit": # à traduire
+        if self.can_change_hunt and not self.is_weaken:
             if self.timer_hunt <= pygame.time.get_ticks():
                 if self.type_hunt == "hunt":
-                    self.timer_hunt = 2500
+                    self.timer_hunt = random.randint(3_750, 7_500) + pygame.time.get_ticks()
                     self.type_hunt = "dissipate"
-                    self.can_change_hunt = False
+                    self.can_change_hunt = True
                 elif self.type_hunt == "dissipate":
-                    self.timer_hunt = pygame.time.get_ticks() + random.randint(8_000, 12_000)
+                    self.timer_hunt = pygame.time.get_ticks() + random.randint(7_500, 15_000)
                     self.type_hunt = "hunt"
                     self.can_change_hunt = True
-                self.can_change_direction = True
-        elif self.get_actual_cell() == self.dispersion_point:
-            self.timer_hunt += pygame.time.get_ticks()
-            self.can_change_hunt = True
+                self.current_cell = None
+                self.change_direction((-1*self.direction[0], -1*self.direction[1]))
     
     def update(self, player, blinky) -> None:
         """fonction qui met à joure le fantôme d'une frame à l'autre
@@ -205,15 +202,18 @@ class Ghost(Character):
         Args:
             time (int): temps de faiblaisse en miliseconde
         """
-        self.speed = self.base_speed * 0.6
+        self.speed = self.base_speed * 0.5
+        if self.current_cell is None or self.labyrinth.is_intersect(*self.current_cell):
+            self.current_cell = None
+        self.change_direction((-1*self.direction[0], -1*self.direction[1]))
         self.is_weaken = True
         self.time_weaken = pygame.time.get_ticks() + time
 
 
 class Blinky(Ghost):
-    dispersion_point = (26, 1)
+    dispersion_point = (24, -1)
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dissipate", timer_hunt=0, speed=8.6, direction=(-1,0), time_in_spawn=0) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dissipate", timer_hunt=3_000, speed=8.6, direction=(-1,0), time_in_spawn=0) -> None:
         super().__init__(labyrinth, x, y, type_hunt, timer_hunt, speed, direction, time_in_spawn, (255, 0, 0))
     
     def hunt(self, player:Character, blinky:Ghost):
@@ -244,9 +244,9 @@ class Blinky(Ghost):
 
 
 class Pinky(Ghost):
-    dispersion_point = (1, 1)
+    dispersion_point = (3, -1)
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dissipate", timer_hunt=0, speed=8.6, direction=(-1,0), time_in_spawn=1_000) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dissipate", timer_hunt=3_000, speed=8.6, direction=(-1,0), time_in_spawn=2_000) -> None:
         super().__init__(labyrinth, x, y, type_hunt, timer_hunt, speed, direction, time_in_spawn, (255, 184, 255))
 
     def hunt(self, player:Character, blinky:Ghost):
@@ -267,9 +267,9 @@ class Pinky(Ghost):
 
 
 class Inky(Ghost):
-    dispersion_point = (26, 29)
+    dispersion_point = (27, 32)
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dissipate", timer_hunt=0, speed=8.6, direction=(-1,0), time_in_spawn=4_000) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dissipate", timer_hunt=3_000, speed=8.6, direction=(-1,0), time_in_spawn=4_000) -> None:
         super().__init__(labyrinth, x, y, type_hunt, timer_hunt, speed, direction, time_in_spawn, (0, 255, 255))
     
     def hunt(self, player:Character, blinky:Ghost):
@@ -293,9 +293,9 @@ class Inky(Ghost):
 
    
 class Clyde(Ghost):
-    dispersion_point = (1, 29)
+    dispersion_point = (0, 32)
 
-    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dissipate", timer_hunt=0, speed=8.6, direction=(-1,0), time_in_spawn=7_000) -> None:
+    def __init__(self, labyrinth: Labyrinth, x=TILE_SIZE*13 + TILE_SIZE//2, y=TILE_SIZE*14, type_hunt="dissipate", timer_hunt=3_000, speed=8.6, direction=(-1,0), time_in_spawn=7_000) -> None:
         super().__init__(labyrinth, x, y, type_hunt, timer_hunt, speed, direction, time_in_spawn, (255, 184, 81))
     
     def hunt(self, player:Character, blinky:Ghost):
