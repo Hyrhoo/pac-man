@@ -137,6 +137,7 @@ if score == 14_620:
 sounds["siren"]["weak"].stop()
 sounds["siren"]["1"].stop()
 sounds["off game"]["end"].play()
+display_score()
 labyrinth.draw_level()
 player_group.draw(screen)
 ghost_group.draw(screen)
