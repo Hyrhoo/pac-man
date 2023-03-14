@@ -5,7 +5,12 @@ pygame.mixer.pre_init()
 
 pygame.init()
 pygame.key.set_repeat(0,0)
-pygame.mixer.set_num_channels(3)
+pygame.mixer.set_num_channels(4)
+
+screen_size = pygame.display.Info().current_h
+tile_multi = screen_size/1080
+TILE_SIZE = round(tile_multi*TILE_SIZE)
+SPEED_MULTI=TILE_SIZE/50
 
 screen = pygame.display.set_mode((TILE_SIZE*(WIDTH+2), TILE_SIZE * HEIGHT))
 clock = pygame.time.Clock()
