@@ -2,6 +2,8 @@
 
 Pac man pour un projet de NSI.
 
+Un éxecutable est dissponible dans le dossier du même nom !
+
 Pour commencer le jeu, lancer le fichier "main.py".  
 Il appellera les différents morceaux de code dans le dossier "scripts".  
 Les images sont dans data.  
