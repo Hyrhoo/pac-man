@@ -1,5 +1,7 @@
 # pac-man
 
+> Ce programme utilise la bibliothèque graphique **pygame** qu'il faut installer préalablement.
+
 Pac man pour un projet de NSI.
 
 Un éxecutable est dissponible dans le dossier du même nom !
