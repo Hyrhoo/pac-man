@@ -34,3 +34,7 @@ les commandes:
 - Galaxian = 2000 Pts
 - Bell = 3000 Pts
 - Key = 5000 Pts
+
+![img](https://github.com/Hyrhoo/pac-man/blob/main/img/image1.png)
+
+![img](https://github.com/Hyrhoo/pac-man/blob/main/img/image2.png)
